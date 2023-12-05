@@ -19,7 +19,6 @@ import handlers.MaskHandler;
 import handlers.MouseHandler;
 import handlers.MouseMotionHandler;
 import handlers.Sound;
-import object.ObjectDrawerThread;
 
 public class Game extends JPanel implements Runnable, Sound{
     public JFrame window;
@@ -51,17 +50,9 @@ public class Game extends JPanel implements Runnable, Sound{
     Thread gameThread;
     Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 
-    ObjectDrawerThread objectDrawerThread;
-    AssetSetter  assetSetter;
-    Graphics2D g2;
-
-
     public Game(){
         setWindowDefaults();
         new ImageHandler();
-        this.objectDrawerThread = new ObjectDrawerThread(this);
-        assetSetter = new AssetSetter(this, objectDrawerThread);
-        assetSetter.setObject();
 
         this.maskHandler = new MaskHandler();
         this.player = new Player(this);
@@ -73,7 +64,7 @@ public class Game extends JPanel implements Runnable, Sound{
         this.pauseMenu = new PauseMenu(this);
         this.gameOverMenu = new GameOverMenu(this);
 
-        this.entityHandler = new EntityHandler(this, g2);
+        this.entityHandler = new EntityHandler(this);
 
         this.addKeyListener(keyH);
         this.addMouseListener(mouseH);
@@ -159,14 +150,13 @@ public class Game extends JPanel implements Runnable, Sound{
     protected void paintComponent(Graphics g){
         if(this.gameThread != null){
             super.paintComponent(g);
-            g2 = (Graphics2D)g;
+            Graphics2D g2 = (Graphics2D)g;
 
             if(this.gameState == mainMenuState){
                 this.mainMenu.draw(g2);
             }
 
             if(this.gameState ==  mainGameState){
-                objectDrawerThread.drawObjects(g2);
 
                 if(!this.paused){
                     this.entityHandler.draw(g2);

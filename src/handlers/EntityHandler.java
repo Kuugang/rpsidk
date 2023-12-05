@@ -18,7 +18,7 @@ public class EntityHandler{
 
     public CopyOnWriteArrayList<Entity> entities;
     Twins twins;
-    public EntityHandler(Game game, Graphics2D g2){
+    public EntityHandler(Game game){
         this.game = game;
         this.player = game.player;
         this.collisionChecker = new CollisionChecker(game.player);
