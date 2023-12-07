@@ -2,7 +2,11 @@ package entity;
 
 import handlers.ImageHandler;
 import handlers.KeyHandler;
+import handlers.MaskHandler;
 import handlers.MouseHandler;
+import entity.buffs.PlayerBuff;
+import entity.bullets.Bullet;
+import entity.bullets.PlayerBullet;
 import main.Game;
 
 import java.awt.Color;
@@ -11,9 +15,9 @@ import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.concurrent.CopyOnWriteArrayList;
-
 
 public class Player extends Entity implements Rotate{
     private int health;
@@ -21,6 +25,8 @@ public class Player extends Entity implements Rotate{
     public int fireCooldown = 0;
     public int reloadTime = 30;
     public int bulletType = 1;
+    private int damage = 1;
+
 
     private int invunerableTime = 0;
     private int maxInvulnerableTime = 100;
@@ -42,25 +48,30 @@ public class Player extends Entity implements Rotate{
     public BufferedImage[] playerFrames;
     public CopyOnWriteArrayList<Bullet> bullets = new CopyOnWriteArrayList<>();
     private BufferedImage bulletTypeImage = ImageHandler.rockBulletImage;
-    PlayerBullet playerBullet;
+    private PlayerBullet bulletPrototype;
+    private ArrayList<PlayerBuff> buffs = new ArrayList<>();
 
     public Player(Game game) {
+        this.id = 1;
         this.game = game;
-        playerBullet = new PlayerBullet(this.game, 0F, 0, 0);
+        bulletPrototype = new PlayerBullet(this.game, 0F, 0, 0);
         getImage();
         reset();
     }
 
+    public void addBuff(PlayerBuff buff) {
+        buffs.add(buff);
+        buff.applyBuff(this);
+    }
 
     public void reset() {
         this.x = 0;
         this.y = 0;
-        this.mask = new Area(this.game.maskHandler.addMask(this));
+        this.mask = new Area(MaskHandler.getMask(this.id));
         this.x = this.game.window.getWidth() / 2;
         this.y = this.game.window.getHeight() / 2;
         this.health = 999;
         this.score = 0;
-
     }
 
     public void setHandlers(KeyHandler keyH, MouseHandler mouseH){
@@ -99,16 +110,10 @@ public class Player extends Entity implements Rotate{
             double targetY = this.game.absoluteMouseY - ((game.getLocationOnScreen().y + this.y));
             double rotationAngleInRadians = Math.atan2(targetY, targetX);
 
-            CloneableEntity newBullet = playerBullet.clone();
+            CloneableEntity newBullet = bulletPrototype.clone();
             PlayerBullet newPlayerBullet = (PlayerBullet)newBullet;
-            newPlayerBullet.game = this.game;
-            newPlayerBullet.angle = rotationAngleInRadians;
-            newPlayerBullet.bulletType = this.bulletType;
-            newPlayerBullet.getImage();
-            newPlayerBullet.x = this.x;
-            newPlayerBullet.y = this.y;
+            newPlayerBullet.initClone(rotationAngleInRadians, bulletType, x, y);
             bullets.add(newPlayerBullet);
-            // bullets.add(new PlayerBullet(game, this.x, this.y, rotationAngleInRadians));
             fireCooldown = 3;
         }
     }
@@ -211,19 +216,17 @@ public class Player extends Entity implements Rotate{
         double rotationAngleInRadians = Math.atan2(directionY, directionX);
         at.rotate(rotationAngleInRadians, image.getWidth() / 2.0, image.getHeight() / 2.0);
 
-        if (this.game.maskHandler.getMask(this) != null) {
-            Area newMask = this.game.maskHandler.getMask(this);
-            at = AffineTransform.getTranslateInstance(this.x, this.y);
+        Area newMask = MaskHandler.getMask(this.id);
+        at = AffineTransform.getTranslateInstance(this.x, this.y);
 
-            directionX = this.game.absoluteMouseX - ((game.getLocationOnScreen().x + this.x));
-            directionY = this.game.absoluteMouseY - ((game.getLocationOnScreen().y + this.y));
-            rotationAngleInRadians = Math.atan2(directionY, directionX);
+        directionX = this.game.absoluteMouseX - ((game.getLocationOnScreen().x + this.x));
+        directionY = this.game.absoluteMouseY - ((game.getLocationOnScreen().y + this.y));
+        rotationAngleInRadians = Math.atan2(directionY, directionX);
 
-            at.rotate(rotationAngleInRadians);
-            this.mask.reset();
-            this.mask.add(newMask);
-            this.mask.transform(at);
-        }
+        at.rotate(rotationAngleInRadians);
+        this.mask.reset();
+        this.mask.add(newMask);
+        this.mask.transform(at);
     }
 
     public void update(){
@@ -255,5 +258,13 @@ public class Player extends Entity implements Rotate{
 
         g2.setColor(Color.BLUE);
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    }
+
+    public int getDamage(){
+        return this.damage;
+    }
+
+    public void setDamage(int damage){
+        this.damage = damage;
     }
 }

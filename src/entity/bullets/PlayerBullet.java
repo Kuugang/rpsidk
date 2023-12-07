@@ -1,4 +1,4 @@
-package entity;
+package entity.bullets;
 
 import main.Game;
 

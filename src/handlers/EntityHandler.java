@@ -4,86 +4,97 @@ import main.Game;
 
 import java.awt.Graphics2D;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.CopyOnWriteArrayList;
 import entity.*;
-
+import entity.bullets.Bullet;
 
 public class EntityHandler{
     Game game;
-    double spawnChance =  0.005;
     CollisionChecker collisionChecker;
     Player player;
-    public CopyOnWriteArrayList<Enemy> enemies;
-    public CopyOnWriteArrayList<Boss> boss;
 
     public CopyOnWriteArrayList<Entity> entities;
-    Twins twins;
+
+    private Timer timer;
+    private double summonRate = 0.2;
+    Random random;
+    private long startTime;
+    private long interval  = 1_000;
+    private int elapsedTimeInSeconds;
+
     public EntityHandler(Game game){
+        random = new Random();
+        startTime = System.currentTimeMillis();
         this.game = game;
         this.player = game.player;
         this.collisionChecker = new CollisionChecker(game.player);
-        this.twins  = new Twins(game);
         this.entities = new CopyOnWriteArrayList<>();
         this.entities.add(this.game.player);
+
+        timer = new Timer();
+        timer.scheduleAtFixedRate(new SummonTask(), 0, interval);
+    }
+
+
+    private class SummonTask extends TimerTask {
+        @Override
+        public void run() {
+            summonEnemy();
+            long currentTime = System.currentTimeMillis();
+            elapsedTimeInSeconds = (int) ((currentTime - startTime) / 1000.0);
+        }
     }
 
     public void reset(){
-        this.enemies = new CopyOnWriteArrayList<>();
-
-        // if (!boss.isEmpty()) {
-        //     for (Boss b : boss) {
-        //         b.dispose();
-        //     }
-        // }
-
-        this.boss = new CopyOnWriteArrayList<>();
+        this.entities = new CopyOnWriteArrayList<>();
     }
 
     public void summonEnemy(){
-        // if (boss.isEmpty()) {
-            // boss.add(new Twins(game));
-            // boss.add(new Snake(game));
-        // }
+        if(this.elapsedTimeInSeconds != 0 && this.elapsedTimeInSeconds % 1 == 0){
+            if(!entities.contains(Twins.getInstance(game))){
+                entities.add(0, Twins.getInstance(game));
+            }
+        }
 
-        if(Math.random() < spawnChance){
-            Random rand = new Random();
-            int n = rand.nextInt(3);
-            if(n == 0)entities.add(new RockEnemy(game));
-            if(n == 1)entities.add(new PaperEnemy(game));
-            if(n == 2)entities.add(new ScissorEnemy(game));
+        if(Math.random() < summonRate){
+            int n = 0;
+            for(int i = 0; i < 3; i++){
+                n = random.nextInt(3);
+                if(n == 0)entities.add(0, new RockEnemy(game));
+                if(n == 1)entities.add(0, new PaperEnemy(game));
+                if(n == 2)entities.add(0, new ScissorEnemy(game));
+            }
         }
     }
 
     public void update(){
-        summonEnemy();
-        this.twins.update();
+        if(this.elapsedTimeInSeconds != 0 && this.elapsedTimeInSeconds % 1 == 0){
+            for(Entity e: entities){
+                if(e instanceof Enemy){
+                    ((Enemy)e).setHealth(((Enemy)e).getHealth() + 1);
+                }
+            }
+        }
         for (Entity e : entities) {
-            e.update();
+            if(e.isActive){
+                e.update();
+            }else{
+                entities.remove(e);
+            }
         }
 
-        // for (Boss b : boss) {
-        //     if(b instanceof Twins){
-        //         if (!((Twins) b).isActive) {
-        //             boss.remove(b);
-        //             //todo fix lag upon removing 
-        //             continue;
-        //         }
-        //     }
-        //     b.update();
-        // }
-
-        collisionChecker.checkCollisions(this.entities, this.boss, player.bullets);
+        
+        collisionChecker.checkCollisions(this.entities, player.bullets);
     }
 
     public void draw(Graphics2D g2){
-        if(g2 != null){
-            this.twins.draw(g2);
-
-            for (Bullet bullet : player.bullets) {
-                bullet.draw(g2);
-            }
-
-            for(Entity e : entities){
+        for (Bullet bullet : player.bullets) {
+            bullet.draw(g2);
+        }
+        for(Entity e : entities){
+            if(e.isActive){
                 e.draw(g2);
             }
         }

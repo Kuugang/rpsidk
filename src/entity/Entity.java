@@ -8,8 +8,9 @@ import java.awt.geom.Area;
 import java.awt.image.BufferedImage;
 
 public abstract class Entity {
+    public int id;
     public double x, y;
-    Game game;
+    public Game game;
     public double speed;
     public boolean isActive = true;
     public BufferedImage image;

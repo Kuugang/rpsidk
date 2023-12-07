@@ -1,39 +1,57 @@
 package handlers;
 
-import entity.Entity;
-
 import java.awt.geom.Area;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
-import java.util.Map;
 
 public class MaskHandler {
-    HashMap<Entity, Area> masks;
-    public MaskHandler() {
-        this.masks = new HashMap<>();
-    }
+    static HashMap<Integer, Area> masks = new HashMap<>();;
+    private static Area addMask(int entityId){
+        BufferedImage image = null;
+        switch (entityId) {
+            case 1:
+                image = ImageHandler.playerFrames[0];
+                break;
+            case 2:
+                image = ImageHandler.rockBulletImage;
+                break;
+            case 3:
+                image = ImageHandler.paperBulletImage;
+                break;
+            case 4:
+                image = ImageHandler.scissorBulletImage;
+                break;
+            case 5:
+                image = ImageHandler.enemyRockImage;
+                break;
+            case 6:
+                image = ImageHandler.enemyPaperImage;
+                break;
+            case 7:
+                image = ImageHandler.enemyScissorImage;
+                break;
+            case 8:
+                image = ImageHandler.boss1;
+            default:
+                break;
+        }
 
-    public Area addMask(Entity entity){
-        Area mask = createMaskFromTransparency(entity.image, entity.x - (double) entity.image.getWidth() / 2, entity.y - (double) entity.image.getHeight() / 2);
-        masks.put(entity, mask);
+        Area mask = createMaskFromTransparency(image, 0 - image.getWidth() / 2, 0 - image.getHeight() / 2);
+        masks.put(entityId, mask);
         return mask;
     }
 
-    public Area getMask(Entity entity){
-        try {
-            for (Map.Entry<Entity, Area> entry : masks.entrySet()) {
-                if(entry.getKey() == entity){
-                    return entry.getValue();
-                }
-            }
-        }catch (Exception e){
-            e.printStackTrace();
+    public static Area getMask(int entityId){
+        if(!masks.containsKey(entityId)){
+            Area mask = addMask(entityId);
+            masks.put(entityId, mask);
+            return mask;
         }
-        return null;
+        return masks.get(entityId);
     }
 
-    public Area createMaskFromTransparency(BufferedImage image, double x, double y) {
+    public static Area createMaskFromTransparency(BufferedImage image, double x, double y) {
         Area mask = new Area();
 
         for (int i = 0; i < image.getWidth(); i++) {

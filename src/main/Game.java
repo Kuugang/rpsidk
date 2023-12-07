@@ -12,6 +12,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import entity.Player;
+import entity.buffs.AttackSpeedBuff;
 import handlers.EntityHandler;
 import handlers.ImageHandler;
 import handlers.KeyHandler;
@@ -31,7 +32,6 @@ public class Game extends JPanel implements Runnable, Sound{
     public int mouseY;
     public int absoluteMouseX;
     public int absoluteMouseY;
-    public MaskHandler maskHandler;
     public EntityHandler entityHandler;
     public Player player;
     public KeyHandler keyH;
@@ -54,7 +54,6 @@ public class Game extends JPanel implements Runnable, Sound{
         setWindowDefaults();
         new ImageHandler();
 
-        this.maskHandler = new MaskHandler();
         this.player = new Player(this);
         this.mouseMotionH = new MouseMotionHandler();
         this.addMouseMotionListener(mouseMotionH);
@@ -102,6 +101,9 @@ public class Game extends JPanel implements Runnable, Sound{
     }
 
     public void run(){
+        // this.player.addBuff(new AttackSpeedBuff(15));
+        // this.player.addBuff(new AttackSpeedBuff(15));
+
         while(gameThread != null){
             this.absoluteMouseX =  MouseInfo.getPointerInfo().getLocation().x;
             this.absoluteMouseY = MouseInfo.getPointerInfo().getLocation().y;

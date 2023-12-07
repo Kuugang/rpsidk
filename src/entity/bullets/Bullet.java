@@ -1,20 +1,22 @@
-package entity;
+package entity.bullets;
 
 import main.Game;
-import handlers.ImageHandler;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
+import entity.CloneableEntity;
+import entity.Entity;
+import handlers.BulletHandler;
+import handlers.MaskHandler;
 
 public class Bullet extends Entity implements CloneableEntity{
     public int bulletType;
-    double angle;
-    double dx;
-    double dy;
-
+    public double angle;
+    public double dx;
+    public double dy;
     public Bullet(Game game, double x, double y, double angle){
         this.speed = 8;
         this.bulletType = 0;
@@ -25,15 +27,17 @@ public class Bullet extends Entity implements CloneableEntity{
     }
 
     public void getImage(){
-        if(this.bulletType == 1){
-            this.image = ImageHandler.rockBulletImage;
-        }else if(this.bulletType == 2){
-            this.image = ImageHandler.paperBulletImage;
-        }else{
-            this.image = ImageHandler.scissorBulletImage;
-        }
+        this.image = BulletHandler.getBulletImage(this.bulletType); 
+        this.id = bulletType + 1;
+        this.mask = new Area(MaskHandler.getMask(this.id));
+    }
 
-        this.mask = new Area(this.game.maskHandler.addMask(this));
+    public void initClone(double angle, int bulletType, double x, double y){
+        this.angle = angle;
+        this.bulletType = bulletType;
+        this.getImage();
+        this.x = x;
+        this.y = y;
     }
 
     public void update(){
@@ -47,14 +51,16 @@ public class Bullet extends Entity implements CloneableEntity{
             this.isActive = false;
         }
 
-        if(this.game.maskHandler != null){
-            Area newMask = this.game.maskHandler.getMask(this);
-            AffineTransform at = AffineTransform.getTranslateInstance(this.x, this.y);
-            at.rotate(this.angle);
-            this.mask.reset();
-            this.mask.add(newMask);
-            this.mask.transform(at);
-        }
+        resetMask();
+    }
+
+    public void resetMask(){
+        Area newMask = MaskHandler.getMask(this.id);
+        AffineTransform at = AffineTransform.getTranslateInstance(this.x, this.y);
+        at.rotate(this.angle);
+        this.mask.reset();
+        this.mask.add(newMask);
+        this.mask.transform(at);
     }
 
     public void draw(Graphics2D g2){
@@ -62,6 +68,7 @@ public class Bullet extends Entity implements CloneableEntity{
         at.rotate(this.angle, image.getWidth() / 2.0, image.getHeight() / 2.0);
         g2.drawImage(image, at, null);
         g2.setColor(Color.RED);
+        // g2.draw(this.mask);
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
     }
 

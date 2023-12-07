@@ -1,5 +1,6 @@
-### XD
+### An endless shooter game about rock paper and scissors.
 
-garbage unoptimized
-idk why d mu work ang movement sa inyo ambot sainyo
-- [ ] kkkk
+# for the java!
+# Garbage unoptimized
+
+- [ ] wow factor++
