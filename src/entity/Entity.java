@@ -10,6 +10,8 @@ import java.awt.image.BufferedImage;
 public abstract class Entity {
     public int id;
     public double x, y;
+    //todo getter and setter for this
+    private int health;
     public Game game;
     public double speed;
     public boolean isActive = true;

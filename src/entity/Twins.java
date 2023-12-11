@@ -17,7 +17,7 @@ public class Twins extends Enemy implements Boss {
         super(game, 4);
         twin1 = new Twin(game, isShootingDuration, isShootingTimer, maxStrokeWidth, minStrokeWidth);
         twin2 = new Twin(game, isShootingDuration, isShootingTimer, maxStrokeWidth, minStrokeWidth);
-        this.health = 1;
+        this.health = 10;
     }
 
     public static Twins getInstance(Game game) {

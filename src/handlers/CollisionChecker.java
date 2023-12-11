@@ -2,6 +2,7 @@ package handlers;
 
 import entity.Player;
 import entity.Twins;
+import entity.buffs.Orb;
 import entity.Twin;
 import entity.bullets.Bullet;
 import entity.Enemy;
@@ -51,6 +52,22 @@ public class CollisionChecker implements Sound{
                         deactivate(enemy);
                     }
                 }
+            }
+            if(e instanceof Orb){
+                double distanceSquared = (e.x - player.x) * (e.x - player.x) + (e.y - player.y) * (e.y - player.y);
+                if (distanceSquared > 200 * 200) continue;
+                    Area intersection = new Area(player.mask);
+                    intersection.intersect(e.mask);
+                    if (!intersection.isEmpty()) {
+                        player.speedBuff(5);
+
+                        deactivate(e);
+                    }
+                // player.speed += 2;
+                // player.reloadTime -= 15;
+                // deactivate(e);
+
+                //make mask for orb
             }
         }
 
@@ -154,7 +171,6 @@ public class CollisionChecker implements Sound{
         if (e instanceof Enemy) {
             Enemy enemy = (Enemy) e;
             enemy.takeDamage(this.player.getDamage());
-        
             if(enemy.getHealth() <= 0){
                 player.score++;
             }

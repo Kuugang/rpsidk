@@ -55,6 +55,8 @@ public class ImageHandler implements UtilityTool{
             
             for (int i = 0; i < orbImages.length; i++) {
                 orbImages[i] = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("../resource/background/orbBuff/" + (i + 1) + ".png")));
+                orbImages[i] = scaleImage(orbImages[i], 100, 100);
+
             }
 
             for (int i = 0; i < gems.length; i++) {

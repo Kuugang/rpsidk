@@ -267,4 +267,9 @@ public class Player extends Entity implements Rotate{
     public void setDamage(int damage){
         this.damage = damage;
     }
+
+    public void speedBuff(double speedIncrement){
+        this.top_speed += speedIncrement;
+        System.out.println(top_speed);
+    }
 }

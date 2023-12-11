@@ -33,6 +33,8 @@ public class MaskHandler {
                 break;
             case 8:
                 image = ImageHandler.boss1;
+            case 9:
+                image = ImageHandler.orbImages[0];
             default:
                 break;
         }
