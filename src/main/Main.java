@@ -1,9 +1,8 @@
 package main;
 
-import java.io.IOException;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args){
         Game gamePanel = new Game();
         gamePanel.startGameThread();
     }

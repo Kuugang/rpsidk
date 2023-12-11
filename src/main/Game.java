@@ -79,7 +79,7 @@ public class Game extends JPanel implements Runnable, Sound{
 
         this.window.setUndecorated(true);
         this.window.setBackground(new Color(0, 0, 0, 0));
-        // this.setPreferredSize(new Dimension(dim.height, dim.width));
+        // // this.setPreferredSize(new Dimension(dim.height, dim.width));
         this.setOpaque(false);
         this.window.setAlwaysOnTop(true);
         this.window.add(this);
