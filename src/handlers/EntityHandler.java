@@ -30,7 +30,7 @@ public class EntityHandler{
         startTime = System.currentTimeMillis();
         this.game = game;
         this.player = game.player;
-        this.collisionChecker = new CollisionChecker(game.player);
+        this.collisionChecker = new CollisionChecker(game.player, game);
         this.entities = new CopyOnWriteArrayList<>();
         this.entities.add(this.game.player);
 

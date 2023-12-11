@@ -158,19 +158,26 @@ public class Game extends JPanel implements Runnable, Sound{
                 this.mainMenu.draw(g2);
             }
 
-            if(this.gameState ==  mainGameState){
+            if(this.gameState ==  mainGameState) {
 
-                if(!this.paused){
+                if (!this.paused) {
                     this.entityHandler.draw(g2);
                 }
 
-                if(this.paused){
+                if (this.paused) {
                     this.pauseMenu.draw(g2);
                 }
 
                 g2.setColor(Color.GREEN);
-                g2.drawString("Score: " + player.score, 5, 10);
-                g2.drawString("Health: " + player.getHealth() ,400, 10);
+// Assuming g2 is your Graphics2D object
+
+// Set margins as a fixed value with an increased marginTop
+                int marginLeft = 15; // Adjust as needed
+                int marginTop = 40; // Adjust as needed
+
+// Draw the text at the calculated positions
+                g2.drawString("Score: " + player.score, marginLeft, marginTop);
+                g2.drawString("Health: " + player.getHealth(), marginLeft + 400, marginTop);
             }
 
             if(this.gameState == gameOverState){

@@ -23,7 +23,7 @@ public class ImageHandler implements UtilityTool{
     public static BufferedImage background;
     public static BufferedImage boss1;
 
-    public static BufferedImage[] orbImages = new BufferedImage[96];
+    public static BufferedImage[] orbImages = new BufferedImage[91];
     public static BufferedImage[] gems = new BufferedImage[35];
 
     public static BufferedImage apple;
@@ -55,7 +55,7 @@ public class ImageHandler implements UtilityTool{
             
             for (int i = 0; i < orbImages.length; i++) {
                 orbImages[i] = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("../resource/background/orbBuff/" + (i + 1) + ".png")));
-                orbImages[i] = scaleImage(orbImages[i], 100, 100);
+                orbImages[i] = scaleImage(orbImages[i], 89, 129);
 
             }
 
