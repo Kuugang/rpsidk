@@ -24,7 +24,7 @@ public class EntityHandler{
     private long startTime;
     private long interval  = 1_000;
     private int elapsedTimeInSeconds;
-    Orb orb;
+    public Orb orb;
     public EntityHandler(Game game){
         random = new Random();
         startTime = System.currentTimeMillis();
@@ -50,7 +50,6 @@ public class EntityHandler{
             elapsedTimeInSeconds = (int) ((currentTime - startTime) / 1000.0);
         }
     }
-
     public void reset(){
         this.entities = new CopyOnWriteArrayList<>();
         this.entities.add(this.game.player);
@@ -90,7 +89,6 @@ public class EntityHandler{
             }
         }
 
-        
         collisionChecker.checkCollisions(this.entities, player.bullets);
     }
 

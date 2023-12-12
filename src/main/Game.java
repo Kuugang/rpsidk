@@ -169,13 +169,13 @@ public class Game extends JPanel implements Runnable, Sound{
                 }
 
                 g2.setColor(Color.GREEN);
-// Assuming g2 is your Graphics2D object
+                // Assuming g2 is your Graphics2D object
 
-// Set margins as a fixed value with an increased marginTop
+                // Set margins as a fixed value with an increased marginTop
                 int marginLeft = 15; // Adjust as needed
                 int marginTop = 40; // Adjust as needed
 
-// Draw the text at the calculated positions
+                // Draw the text at the calculated positions
                 g2.drawString("Score: " + player.score, marginLeft, marginTop);
                 g2.drawString("Health: " + player.getHealth(), marginLeft + 400, marginTop);
             }

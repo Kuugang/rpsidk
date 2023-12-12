@@ -1,6 +1,7 @@
 package entity.buffs;
-
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 
@@ -12,8 +13,6 @@ import main.Game;
 public class Orb extends Entity {
     int frameIndex;
     int id;
-    private long respawnTimer;
-    private static final long RESPAWN_INTERVAL = 100000000;
     public Orb(Game game) {
         this.game = game;
         respawn();
@@ -64,11 +63,5 @@ public class Orb extends Entity {
         // Reset orb position or any other necessary initialization
         setScreenResolution();
 
-        // Set the respawn timer
-        respawnTimer = System.currentTimeMillis() + RESPAWN_INTERVAL;
-    }
-
-    public long getRespawnTimer() {
-        return respawnTimer;
     }
 }

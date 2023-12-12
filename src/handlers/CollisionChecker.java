@@ -8,6 +8,7 @@ import entity.bullets.Bullet;
 import entity.Enemy;
 import entity.Entity;
 import main.Game;
+import handlers.EntityHandler;
 
 import java.awt.geom.Area;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -15,7 +16,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class CollisionChecker implements Sound{
     Player player;
     Game game;
-    CopyOnWriteArrayList<Entity> copyEntities;
     public CollisionChecker(Player player, Game game){
         this.player = player;
         this.game = game;
@@ -26,8 +26,6 @@ public class CollisionChecker implements Sound{
         entities.removeIf(entity -> !entity.isActive);
 
 
-
-        //player - enemy collision
         for(Entity e : entities){
             if(e instanceof Enemy){
                 Enemy enemy = (Enemy)e;
@@ -53,7 +51,7 @@ public class CollisionChecker implements Sound{
                     intersection.intersect(enemy.mask);
                     if (!intersection.isEmpty()) {
                         player.takeDamage();
-                        deactivate(enemy, entities);
+                        deactivate(enemy);
                     }
                 }
             }
@@ -66,9 +64,7 @@ public class CollisionChecker implements Sound{
                 if (!intersection.isEmpty()) {
                     player.speedBuff(5);
 
-                    // Deactivate and schedule respawn
-                    deactivate(e, entities);
-                    ((Orb) e).respawn();
+                    deactivate(e);
                 }
             }
         }
@@ -119,13 +115,13 @@ public class CollisionChecker implements Sound{
                 case 1:
                     if(bulletType == 2){
                         playSE(3);
-                        deactivate(enemy, entities);
-                        deactivate(bullet, entities);
+                        deactivate(enemy);
+                        deactivate(bullet);
                         return;
                     }
                     if(bulletType == 3){
                         playSE(2);
-                        deactivate(bullet, entities);
+                        deactivate(bullet);
                         enemy.speed+= 0.5;
                         return;
                     }
@@ -133,13 +129,13 @@ public class CollisionChecker implements Sound{
                 case 2:
                     if(bulletType == 3){
                         playSE(1);
-                        deactivate(enemy, entities);
-                        deactivate(bullet, entities);
+                        deactivate(enemy);
+                        deactivate(bullet);
                         return;
                     }
                     if(bulletType == 1){
                         playSE(3);
-                        deactivate(bullet, entities);
+                        deactivate(bullet);
                         enemy.speed+= 0.5;
                         return;
                     }
@@ -147,20 +143,20 @@ public class CollisionChecker implements Sound{
                 case 3:
                     if(bulletType == 1){
                         playSE(2);
-                        deactivate(enemy, entities);
-                        deactivate(bullet, entities);
+                        deactivate(enemy);
+                        deactivate(bullet);
                         return;
                     }
                     if(bulletType == 2){
                         playSE(1);
-                        deactivate(bullet, entities);
+                        deactivate(bullet);
                         enemy.speed+= 0.5;
                         return;
                     }
                     break;
                 case 4:
-                    deactivate(bullet, entities);
-                    deactivate(enemy, entities);
+                    deactivate(bullet);
+                    deactivate(enemy);
                 default:
                     break;
             }
@@ -169,7 +165,7 @@ public class CollisionChecker implements Sound{
         }
     }
 
-    private void deactivate(Entity e, CopyOnWriteArrayList<Entity> entities) {
+    private void deactivate(Entity e) {
         if (e instanceof Enemy) {
             // Handling enemy deactivation logic (your existing code)
             Enemy enemy = (Enemy) e;
@@ -177,13 +173,6 @@ public class CollisionChecker implements Sound{
             if (enemy.getHealth() <= 0) {
                 player.score++;
             }
-        } else if (e instanceof Orb) {
-            // Handling Orb deactivation logic
-            // Respawn the Orb by creating a new instance and adding it to the list of entities
-            entities.remove(e); // Remove the deactivated Orb from the list
-
-            Orb newOrb = new Orb(game); // Instantiate a new Orb
-            entities.add(newOrb); // Add the new Orb to the list
         } else {
             // Deactivate other types of entities (your existing code)
             e.isActive = false;
