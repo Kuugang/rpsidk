@@ -6,7 +6,6 @@ import java.util.Map;
 
 public class BulletHandler{
     private static Map<Integer, BufferedImage> bulletImages = new HashMap<>();
-
     public static BufferedImage getBulletImage(int bulletType) {
         if (!bulletImages.containsKey(bulletType)) {
             BufferedImage image = null;

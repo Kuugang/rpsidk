@@ -12,7 +12,6 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import entity.Player;
-import entity.buffs.AttackSpeedBuff;
 import handlers.EntityHandler;
 import handlers.ImageHandler;
 import handlers.KeyHandler;
@@ -37,10 +36,12 @@ public class Game extends JPanel implements Runnable, Sound{
     public KeyHandler keyH;
     public MouseHandler mouseH;
     public MouseMotionHandler mouseMotionH;
+    public ImageHandler imageHandler;
+    public MaskHandler maskHandler;
 
     // GameState variables
     public int mainMenuState = 0, mainGameState = 1, gameOverState = 2;
-    public int gameState = mainGameState;
+    public int gameState = mainMenuState;
     public boolean paused;
     public MainMenu mainMenu;
     public PauseMenu pauseMenu;
@@ -48,11 +49,12 @@ public class Game extends JPanel implements Runnable, Sound{
     public FPS fps = new FPS();
     public ScoreBoard scoreBoard;
     Thread gameThread;
-    Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+    public final Dimension SCREENSIZE = Toolkit.getDefaultToolkit().getScreenSize();
 
     public Game(){
         setWindowDefaults();
-        new ImageHandler();
+        this.imageHandler = new ImageHandler();
+        this.maskHandler = new MaskHandler(this);
 
         this.player = new Player(this);
         this.mouseMotionH = new MouseMotionHandler();
@@ -143,7 +145,6 @@ public class Game extends JPanel implements Runnable, Sound{
                     scoreBoard.addScore(String.valueOf(LocalDate.now()), player.score);
                     this.gameState = gameOverState;
                 }
-
                 entityHandler.update();
             }
         }

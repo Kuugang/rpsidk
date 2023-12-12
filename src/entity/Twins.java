@@ -1,6 +1,7 @@
 package entity;
 
 import java.awt.Graphics2D;
+
 import main.Game;
 
 public class Twins extends Enemy implements Boss {
@@ -17,7 +18,8 @@ public class Twins extends Enemy implements Boss {
         super(game, 4);
         twin1 = new Twin(game, isShootingDuration, isShootingTimer, maxStrokeWidth, minStrokeWidth);
         twin2 = new Twin(game, isShootingDuration, isShootingTimer, maxStrokeWidth, minStrokeWidth);
-        this.health = 10;
+        this.health = 50;
+        this.maxHealth = 50;
     }
 
     public static Twins getInstance(Game game) {
@@ -30,13 +32,11 @@ public class Twins extends Enemy implements Boss {
     public void update() {
         twin1.update();
         twin2.update();
-
-
     }
 
     public void draw(Graphics2D g2) {
-        twin1.draw(g2);
-        twin2.draw(g2);
+        twin1.draw(g2, health, maxHealth);
+        twin2.draw(g2, health, maxHealth);
     }
 
     public void takeDamage(int damage){
@@ -46,5 +46,15 @@ public class Twins extends Enemy implements Boss {
             instance = null;
             this.game.player.score++;
         }
+    }
+
+    @Override
+    public void destroyInstance() {
+        instance = null;
+    }
+
+    @Override
+    public void getImage() {
+
     }
 }

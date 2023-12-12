@@ -2,13 +2,12 @@ package handlers;
 
 import entity.Player;
 import entity.Twins;
-import entity.buffs.Orb;
+import entity.buffs.Buff;
 import entity.Twin;
 import entity.bullets.Bullet;
 import entity.Enemy;
 import entity.Entity;
 import main.Game;
-import handlers.EntityHandler;
 
 import java.awt.geom.Area;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -45,8 +44,7 @@ public class CollisionChecker implements Sound{
                         continue; 
                     }
                 }else{
-                    double distanceSquared = (enemy.x - player.x) * (enemy.x - player.x) + (enemy.y - player.y) * (enemy.y - player.y);
-                    if (distanceSquared > 200 * 200) continue;
+                    if(!(player.colRect.intersects(enemy.colRect)))continue;
                     Area intersection = new Area(player.mask);
                     intersection.intersect(enemy.mask);
                     if (!intersection.isEmpty()) {
@@ -55,16 +53,14 @@ public class CollisionChecker implements Sound{
                     }
                 }
             }
-            if (e instanceof Orb) {
+            if (e instanceof Buff) {
                 double distanceSquared = (e.x - player.x) * (e.x - player.x) + (e.y - player.y) * (e.y - player.y);
                 if (distanceSquared > 200 * 200) continue;
 
                 Area intersection = new Area(player.mask);
                 intersection.intersect(e.mask);
                 if (!intersection.isEmpty()) {
-                    player.speedBuff(5);
-
-                    deactivate(e);
+                    ((Buff)e).applyBuff();
                 }
             }
         }
@@ -73,29 +69,29 @@ public class CollisionChecker implements Sound{
         for (Bullet bullet : playerBullets) {
             if (!bullet.isActive) continue;
             for(Entity e : entities){
+                if (!e.isActive) continue;
                 if(e instanceof Enemy){
                     if(e instanceof Twins){
                         Twins twins = (Twins)e;
                         for(int i = 0; i < 2; i++){
                             Twin currentTwin = (i == 0) ? twins.twin1 : twins.twin2;
-                            double distanceSquared = (bullet.x - currentTwin.x) * (bullet.x - currentTwin.x) + (bullet.y - currentTwin.y) * (bullet.y - currentTwin.y);
-                            if (distanceSquared <= 200 * 200) {
-                                Area intersection = new Area(bullet.mask);
-                                intersection.intersect(currentTwin.mask);
-                                if (!intersection.isEmpty()) {
-                                    handleCollision(twins, bullet, entities);
-                                    continue;
-                                }
+                            if (!(bullet.colRect.intersects(currentTwin.colRect)))continue;
+                            Area intersection = new Area(bullet.mask);
+                            intersection.intersect(currentTwin.mask);
+                            if (!intersection.isEmpty()) {
+                                handleCollision(twins, bullet, entities);
+                                continue;
                             }
-                            continue; 
                         }
                         continue;
                     }
 
                     Enemy enemy = (Enemy)e;
-                    if (!enemy.isActive) continue;
-                    double distanceSquared = (bullet.x - enemy.x) * (bullet.x - enemy.x) + (bullet.y - enemy.y) * (bullet.y - enemy.y);
-                    if (distanceSquared > 200 * 200) continue;
+                    if(bullet.bulletType == 1 && enemy.enemyType == 1)continue;
+                    if(bullet.bulletType == 2 && enemy.enemyType == 2)continue;
+                    if(bullet.bulletType == 3 && enemy.enemyType == 3)continue;
+
+                    if(!bullet.colRect.intersects(enemy.colRect))continue;
                     Area intersection = new Area(bullet.mask);
                     intersection.intersect(enemy.mask);
                     if (!intersection.isEmpty()) {
@@ -167,14 +163,12 @@ public class CollisionChecker implements Sound{
 
     private void deactivate(Entity e) {
         if (e instanceof Enemy) {
-            // Handling enemy deactivation logic (your existing code)
             Enemy enemy = (Enemy) e;
             enemy.takeDamage(this.player.getDamage());
             if (enemy.getHealth() <= 0) {
                 player.score++;
             }
         } else {
-            // Deactivate other types of entities (your existing code)
             e.isActive = false;
         }
     }

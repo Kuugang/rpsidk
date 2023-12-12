@@ -1,7 +1,5 @@
 package entity;
 
-import handlers.ImageHandler;
-import handlers.MaskHandler;
 import handlers.Sound;
 import main.FPS;
 import main.Game;
@@ -17,7 +15,7 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 
-public class Twin extends Enemy implements Sound {
+public class Twin extends Enemy implements Sound, HealthBarEntity{
     public boolean isShooting;
 
     private int isShootingDuration;
@@ -30,34 +28,32 @@ public class Twin extends Enemy implements Sound {
     Line2D line;
     public double playerX;
     public double playerY;
-    double originX;
-    double originY;
     double directionX;
     double directionY;
     private Point2D.Double destination;
 
     public Twin(Game game, int isShootingDuration, int isShootingTimer, int maxStrokeWidth, int minStrokeWidth) {
         super(game, 4);
-        this.id = enemyType + 4;
+        this.id = 8;
         this.isShootingDuration = isShootingDuration;
         this.isShootingTimer = isShootingTimer;
         this.maxStrokeWidth = maxStrokeWidth;
         this.minStrokeWidth = minStrokeWidth;
         this.strokeWidth = this.minStrokeWidth;
+        this.HEALTH_BAR_WIDTH = (int) (this.image.getWidth() * 0.75);
         getNewDestination();
     }
 
-    public Point2D.Double validSpawnPoint(Game gp) {
-        double x = (int) (Math.random() * (gp.getWidth() - 100 + 1)) + 100;
-        double y = (int) (Math.random() * (gp.getHeight() - 100 + 1)) + 100;
+    public Point2D.Double validSpawnPoint(Game game) {
+        double x = (int) (Math.random() * (game.getWidth() - 100 + 1)) + 100;
+        double y = (int) (Math.random() * (game.getHeight() - 100 + 1)) + 100;
         Point2D.Double spawn = new Point2D.Double(x, y);
         return spawn;
     }
 
-
     public void getImage(){
-        this.image = ImageHandler.boss1;
-        this.mask = new Area(MaskHandler.getMask(this.id));
+        this.image = this.game.imageHandler.getImage(id)[0];
+        this.mask = new Area(this.game.maskHandler.getMask(8));
     }
 
     public void shoot(){
@@ -90,11 +86,12 @@ public class Twin extends Enemy implements Sound {
         }
 
         updateMask();
+        this.colRect.setLocation((int) (this.x - this.image.getWidth() / 2.0), (int) (this.y - this.image.getHeight() / 2.0));
     }
 
     public void updateMask(){
-        Area newMask = MaskHandler.getMask(this.id);
-        AffineTransform at = AffineTransform.getTranslateInstance(this.originX, this.originY);
+        Area newMask = this.game.maskHandler.getMask(this.id);
+        AffineTransform at = AffineTransform.getTranslateInstance(this.x , this.y);
         double rotationAngleInRadians = Math.atan2(directionY, directionX);
         at.rotate(rotationAngleInRadians);
         this.mask.reset();
@@ -141,10 +138,10 @@ public class Twin extends Enemy implements Sound {
                 playerY = this.game.player.y;
             }
 
-            double dx = playerY - originY;
-            double dy = playerX - originX;
+            double dx = playerY - this.y;
+            double dy = playerX - this.x;
 
-            this.line = new Line2D.Double(playerX + (dy * 100), playerY + (dx * 100), originX, originY);
+            this.line = new Line2D.Double(playerX + (dy * 100), playerY + (dx * 100), this.x, this.y);
             g2.setStroke(new BasicStroke(strokeWidth));
             isShootingTimer++;
 
@@ -167,10 +164,7 @@ public class Twin extends Enemy implements Sound {
         }
     }
 
-    public void draw(Graphics2D g2){
-        originX = this.x;
-        originY = this.y;
-
+    public void draw(Graphics2D g2, int health, int maxHealth){
         AffineTransform at = AffineTransform.getTranslateInstance(this.x - image.getWidth() / 2.0, this.y - image.getHeight() / 2.0);
         rotate(image, at);
 
@@ -179,8 +173,12 @@ public class Twin extends Enemy implements Sound {
         if (this.isShooting) {
             shootingAnimation(g2);
         }
-        // g2.draw(mask);
+
+        g2.setStroke(new BasicStroke(1));
         g2.drawImage(this.image, at, null);
+        g2.draw(colRect);
+
+        drawHealthBar(g2, x, y, health, maxHealth, HEALTH_BAR_WIDTH, HEALTH_BAR_HEIGHT);
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
     }
 };

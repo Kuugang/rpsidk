@@ -2,31 +2,27 @@ package entity;
 
 import handlers.ImageHandler;
 import handlers.KeyHandler;
-import handlers.MaskHandler;
 import handlers.MouseHandler;
-import entity.buffs.PlayerBuff;
 import entity.bullets.Bullet;
 import entity.bullets.PlayerBullet;
 import main.Game;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class Player extends Entity implements Rotate{
-    private int health;
+public class Player extends Entity implements Rotate, HealthBarEntity{
     public int score;
     public int fireCooldown = 0;
     public int reloadTime = 30;
     public int bulletType = 1;
     private int damage = 1;
-
 
     private int invunerableTime = 0;
     private int maxInvulnerableTime = 100;
@@ -46,32 +42,31 @@ public class Player extends Entity implements Rotate{
     KeyHandler keyH;
     MouseHandler mouseH;
     public BufferedImage[] playerFrames;
+    public BufferedImage[] images;
     public CopyOnWriteArrayList<Bullet> bullets = new CopyOnWriteArrayList<>();
-    private BufferedImage bulletTypeImage = ImageHandler.rockBulletImage;
+    private BufferedImage bulletTypeImage;
     private PlayerBullet bulletPrototype;
-    private ArrayList<PlayerBuff> buffs = new ArrayList<>();
 
     public Player(Game game) {
         this.id = 1;
         this.game = game;
-        bulletPrototype = new PlayerBullet(this.game, 0F, 0, 0);
         getImage();
+        bulletPrototype = new PlayerBullet(this.game, 0F, 0, 0);
+        this.HEALTH_BAR_WIDTH = (int) (this.images[0].getWidth() * 0.75);
         reset();
-    }
-
-    public void addBuff(PlayerBuff buff) {
-        buffs.add(buff);
-        buff.applyBuff(this);
     }
 
     public void reset() {
         this.x = 0;
         this.y = 0;
-        this.mask = new Area(MaskHandler.getMask(this.id));
+        this.bulletTypeImage = this.game.imageHandler.getImage(2)[0];
+        this.mask = new Area(this.game.maskHandler.getMask(this.id));
         this.x = this.game.window.getWidth() / 2;
         this.y = this.game.window.getHeight() / 2;
         this.health = 999;
+        this.maxHealth = 999;
         this.score = 0;
+        this.colRect = this.mask.getBounds();
     }
 
     public void setHandlers(KeyHandler keyH, MouseHandler mouseH){
@@ -80,7 +75,7 @@ public class Player extends Entity implements Rotate{
     }
 
     public void getImage() {
-        this.image = ImageHandler.playerFrames[0];
+        this.images = game.imageHandler.getImage(id);
     }
 
     public void takeDamage(){
@@ -99,9 +94,9 @@ public class Player extends Entity implements Rotate{
         if (bulletType > 3) {
             bulletType = 1;
         }
-        if(this.bulletType == 1) this.bulletTypeImage = ImageHandler.rockBulletImage;
-        if(this.bulletType == 2) this.bulletTypeImage = ImageHandler.paperBulletImage;
-        if(this.bulletType == 3) this.bulletTypeImage = ImageHandler.scissorBulletImage;
+        if(this.bulletType == 1) this.bulletTypeImage = this.game.imageHandler.getImage(2)[0];
+        if(this.bulletType == 2) this.bulletTypeImage = this.game.imageHandler.getImage(3)[0];
+        if(this.bulletType == 3) this.bulletTypeImage = this.game.imageHandler.getImage(4)[0];
     }
 
     public void shoot() {
@@ -109,12 +104,14 @@ public class Player extends Entity implements Rotate{
             double targetX = this.game.absoluteMouseX - ((game.getLocationOnScreen().x + this.x));
             double targetY = this.game.absoluteMouseY - ((game.getLocationOnScreen().y + this.y));
             double rotationAngleInRadians = Math.atan2(targetY, targetX);
+            
 
             CloneableEntity newBullet = bulletPrototype.clone();
             PlayerBullet newPlayerBullet = (PlayerBullet)newBullet;
             newPlayerBullet.initClone(rotationAngleInRadians, bulletType, x, y);
             bullets.add(newPlayerBullet);
             fireCooldown = 3;
+
         }
     }
 
@@ -216,7 +213,7 @@ public class Player extends Entity implements Rotate{
         double rotationAngleInRadians = Math.atan2(directionY, directionX);
         at.rotate(rotationAngleInRadians, image.getWidth() / 2.0, image.getHeight() / 2.0);
 
-        Area newMask = MaskHandler.getMask(this.id);
+        Area newMask = this.game.maskHandler.getMask(this.id);
         at = AffineTransform.getTranslateInstance(this.x, this.y);
 
         directionX = this.game.absoluteMouseX - ((game.getLocationOnScreen().x + this.x));
@@ -239,12 +236,15 @@ public class Player extends Entity implements Rotate{
             shoot();
         }
         updatePlayerBullets();
+        if(this.image != null){
+            this.colRect.setLocation((int) (this.x - this.image.getWidth() / 2.0), (int) (this.y - this.image.getHeight() / 2.0));
+        }
     }
 
     public void draw(Graphics2D g2) {
-        if (ImageHandler.playerFrames != null && ImageHandler.playerFrames.length > 0) {
-            int frameIndex = (int) ((System.currentTimeMillis() / 100) % ImageHandler.playerFrames.length);
-            image = ImageHandler.playerFrames[frameIndex];
+        if (images != null && images.length > 0) {
+            int frameIndex = (int) ((System.currentTimeMillis() / 100) % images.length);
+            image = images[frameIndex];
         }
 
         AffineTransform at = AffineTransform.getTranslateInstance(this.x - image.getWidth() / 2.0, this.y - image.getHeight() / 2.0);
@@ -253,10 +253,9 @@ public class Player extends Entity implements Rotate{
         g2.drawImage(this.bulletTypeImage, AffineTransform.getTranslateInstance(this.game.getWidth() / 2.0 - this.bulletTypeImage.getWidth() / 2.0,  10), null);
 
         g2.setColor(Color.RED);
+        g2.setStroke(new BasicStroke(1));
+        drawHealthBar(g2, x, y, health, maxHealth, HEALTH_BAR_WIDTH, HEALTH_BAR_HEIGHT);
 
-        // g2.draw(this.mask);
-
-        g2.setColor(Color.BLUE);
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
     }
 
@@ -266,10 +265,5 @@ public class Player extends Entity implements Rotate{
 
     public void setDamage(int damage){
         this.damage = damage;
-    }
-
-    public void speedBuff(double speedIncrement){
-        this.top_speed += speedIncrement;
-        System.out.println(top_speed);
     }
 }

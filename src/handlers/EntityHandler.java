@@ -2,13 +2,13 @@ package handlers;
 
 import main.Game;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CopyOnWriteArrayList;
 import entity.*;
-import entity.buffs.Orb;
 import entity.bullets.Bullet;
 
 public class EntityHandler{
@@ -24,7 +24,7 @@ public class EntityHandler{
     private long startTime;
     private long interval  = 1_000;
     private int elapsedTimeInSeconds;
-    public Orb orb;
+
     public EntityHandler(Game game){
         random = new Random();
         startTime = System.currentTimeMillis();
@@ -32,34 +32,46 @@ public class EntityHandler{
         this.player = game.player;
         this.collisionChecker = new CollisionChecker(game.player, game);
         this.entities = new CopyOnWriteArrayList<>();
-        this.entities.add(this.game.player);
+        this.entities.add(this.player);
 
         timer = new Timer();
-        timer.scheduleAtFixedRate(new SummonTask(), 0, interval);
-        
-        orb = new Orb(game);
-        this.entities.add(orb);
+        timer.scheduleAtFixedRate(new SpawnTask(), 0, interval);
     }
 
+    public void reset(){
+        for(Entity e : entities){
+            if(e instanceof Boss){
+                ((Boss)e).destroyInstance();
+            }
+        }
+        this.entities = new CopyOnWriteArrayList<>();
+        this.entities.add(this.player);
+        this.player.bullets = new CopyOnWriteArrayList<>();
+    }
 
-    private class SummonTask extends TimerTask {
+    private class SpawnTask extends TimerTask {
+        //should pause this when game state is not main game
         @Override
         public void run() {
-            summonEnemy();
+            spawnEntity();
             long currentTime = System.currentTimeMillis();
             elapsedTimeInSeconds = (int) ((currentTime - startTime) / 1000.0);
+
+            if(elapsedTimeInSeconds != 0 && elapsedTimeInSeconds % 60 == 0 && summonRate < 0.5){
+                summonRate = (double)((elapsedTimeInSeconds / 60) + 2) / 10; 
+            }
         }
     }
-    public void reset(){
-        this.entities = new CopyOnWriteArrayList<>();
-        this.entities.add(this.game.player);
-    }
 
-    public void summonEnemy(){
-        if(this.elapsedTimeInSeconds != 0 && this.elapsedTimeInSeconds % 1 == 0){
+
+    public void spawnEntity(){
+        if(this.elapsedTimeInSeconds % 60 == 0){
             if(!entities.contains(Twins.getInstance(game))){
                 entities.add(0, Twins.getInstance(game));
             }
+            // if(!entities.contains(Smiley.getInstance(game))){
+            //     entities.add(0, Smiley.getInstance(game));
+            // }
         }
 
         if(Math.random() < summonRate){
@@ -71,13 +83,19 @@ public class EntityHandler{
                 if(n == 2)entities.add(0, new ScissorEnemy(game));
             }
         }
+
+        // if(Math.random() < 1.0){
+        //     if(!entities.contains(AttackSpeedBuff.getInstance(game))){
+        //         entities.add(0, AttackSpeedBuff.getInstance(game));
+        //     }
+        // }
     }
 
     public void update(){
-        if(this.elapsedTimeInSeconds != 0 && this.elapsedTimeInSeconds % 60 == 0){
+        if(this.elapsedTimeInSeconds != 0 && this.elapsedTimeInSeconds % 120 == 0){
             for(Entity e: entities){
                 if(e instanceof Enemy){
-                    ((Enemy)e).setHealth(((Enemy)e).getHealth() + 1);
+                    ((Enemy)e).setHealth(elapsedTimeInSeconds / 120);
                 }
             }
         }
@@ -99,6 +117,12 @@ public class EntityHandler{
         for(Entity e : entities){
             if(e.isActive){
                 e.draw(g2);
+                if(e.mask != null && e.colRect != null){
+                    g2.setColor(Color.RED);
+                    e.drawMask(g2);
+                    g2.setColor(Color.BLUE);
+                    e.drawColRect(g2);
+                }
             }
         }
     }
