@@ -9,7 +9,7 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CopyOnWriteArrayList;
-import entity.buffs.AttackSpeedBuff;
+import entity.buffs.PlayerBuff;
 import entity.bullets.Bullet;
 import entity.smiley.Smiley;
 
@@ -103,9 +103,9 @@ public class EntityHandler{
             }
         }
 
-        if(Math.random() < .2){
-            if(!entities.contains(AttackSpeedBuff.getInstance(game))){
-                entities.add(0, AttackSpeedBuff.getInstance(game));
+        if(Math.random() < 1){
+            if(!entities.contains(PlayerBuff.getInstance(game))){
+                entities.add(0, PlayerBuff.getInstance(game));
             }
         }
     }
