@@ -11,6 +11,7 @@ import java.util.TimerTask;
 import java.util.concurrent.CopyOnWriteArrayList;
 import entity.buffs.AttackSpeedBuff;
 import entity.bullets.Bullet;
+import entity.smiley.Smiley;
 
 public class EntityHandler{
     Game game;
@@ -20,11 +21,12 @@ public class EntityHandler{
     public CopyOnWriteArrayList<Entity> entities;
 
     private Timer timer;
-    private double summonRate = 0.2;
+    private double summonRate = 0.1;
     Random random;
     private long startTime;
     private long interval  = 1_000;
     private int elapsedTimeInSeconds;
+    private boolean isPaused;
 
     public EntityHandler(Game game){
         random = new Random();
@@ -35,8 +37,22 @@ public class EntityHandler{
         this.entities = new CopyOnWriteArrayList<>();
         this.entities.add(this.player);
 
+        isPaused = true;
         timer = new Timer();
         timer.scheduleAtFixedRate(new SpawnTask(), 0, interval);
+    }
+
+    public void pauseSpawnTask() {
+        timer.cancel(); 
+        isPaused = true;
+    }
+
+    public void resumeSpawnTask() {
+        if (isPaused) {
+            timer = new Timer();
+            timer.scheduleAtFixedRate(new SpawnTask(), 0, interval);
+            isPaused = false;
+        }
     }
 
     public void reset(){
@@ -51,15 +67,17 @@ public class EntityHandler{
     }
 
     private class SpawnTask extends TimerTask {
-        //should pause this when game state is not main game
         @Override
         public void run() {
-            spawnEntity();
-            long currentTime = System.currentTimeMillis();
-            elapsedTimeInSeconds = (int) ((currentTime - startTime) / 1000.0);
-
-            if(elapsedTimeInSeconds != 0 && elapsedTimeInSeconds % 60 == 0 && summonRate < 0.5){
-                summonRate = (double)((elapsedTimeInSeconds / 60) + 2) / 10; 
+            if(game.gameState == game.mainGameState){
+                if(!game.paused){
+                    spawnEntity();
+                    long currentTime = System.currentTimeMillis();
+                    elapsedTimeInSeconds = (int) ((currentTime - startTime) / 1000.0);
+                    if(elapsedTimeInSeconds != 0 && elapsedTimeInSeconds % 60 == 0 && summonRate < 0.5){
+                        summonRate = (double)((elapsedTimeInSeconds / 60) + 1) / 10; 
+                    }
+                }
             }
         }
     }
@@ -67,9 +85,9 @@ public class EntityHandler{
 
     public void spawnEntity(){
         if(this.elapsedTimeInSeconds % 1 == 0){
-            if(!entities.contains(Twins.getInstance(game))){
-                entities.add(0, Twins.getInstance(game));
-            }
+            // if(!entities.contains(Twins.getInstance(game))){
+                // entities.add(0, Twins.getInstance(game));
+            // }
             // if(!entities.contains(Smiley.getInstance(game))){
             //     entities.add(0, Smiley.getInstance(game));
             // }
@@ -118,6 +136,7 @@ public class EntityHandler{
         for(Entity e : entities){
             if(e.isActive){
                 e.draw(g2);
+
                 if(KeyHandler.oneToggled){
                     if(e.mask != null && e.colRect != null){
                         g2.setColor(Color.RED);

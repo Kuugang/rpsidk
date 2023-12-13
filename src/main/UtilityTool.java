@@ -1,9 +1,7 @@
 package main;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics2D;
-import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 
 /**
@@ -55,5 +53,21 @@ public interface UtilityTool {
         g.dispose();
         return result;
     }
+
+    public default BufferedImage flipHorizontal(BufferedImage originalImage) {
+        int width = originalImage.getWidth();
+        int height = originalImage.getHeight();
+
+        BufferedImage flippedImage = new BufferedImage(width, height, originalImage.getType());
+
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                flippedImage.setRGB((width - 1) - x, y, originalImage.getRGB(x, y));
+            }
+        }
+
+        return flippedImage;
+    }
+
 }
 

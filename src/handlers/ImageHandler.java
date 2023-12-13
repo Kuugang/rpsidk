@@ -4,8 +4,6 @@ import main.UtilityTool;
 
 import javax.imageio.ImageIO;
 
-import entity.buffs.Buff;
-
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.HashMap;
@@ -125,6 +123,19 @@ public class ImageHandler implements UtilityTool{
                         image[i] = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("../resource/buff/orb/" + (i + 1) + ".png")));
                         image[i] = scaleImage(image[i], 45, 64);
                     }
+                    break;
+                case 10:
+                    image = new BufferedImage[1];
+                    image[0] = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("../resource/enemies/smiley/smiley.png")));
+                    break;
+                case 11:
+                    image = new BufferedImage[1];
+                    image[0] = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("../resource/enemies/smiley/thumbs-up.png")));
+                    break;
+                case 12:
+                    image = new BufferedImage[1];
+                    image[0] = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("../resource/enemies/smiley/thumbs-up.png")));
+                    image[0] = flipHorizontal(image[0]);
                     break;
             }
             images.put(entityId, image);

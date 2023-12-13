@@ -24,7 +24,6 @@ public class CollisionHandler implements Sound{
         player.bullets.removeIf(bullet -> !bullet.isActive);
         entities.removeIf(entity -> !entity.isActive);
 
-
         for(Entity e : entities){
             if(e instanceof Enemy){
                 Enemy enemy = (Enemy)e;

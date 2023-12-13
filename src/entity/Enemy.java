@@ -33,7 +33,12 @@ public abstract class Enemy extends Entity implements Rotate, SpawnPoints{
         getImage();
         if(!(this instanceof Boss)){
             this.colRect = this.mask.getBounds();
-        } 
+        }
+    }
+
+    public Enemy(Game game){
+        this.game = game; 
+        this.speed = 1;
     }
 
     public int getDamage(){

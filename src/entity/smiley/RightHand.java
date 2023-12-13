@@ -9,16 +9,16 @@ import java.awt.geom.Point2D;
 import entity.Enemy;
 import main.Game;
 
-public class LeftHand extends Enemy{
+public class RightHand extends Enemy{
     Smiley smiley;
 
     private Point2D.Double destination;
 
-    public LeftHand(Smiley smiley, Game game){
+    public RightHand(Smiley smiley, Game game){
         super(game);
-        this.id = 12;
+        this.id = 11;
         this.smiley = smiley;
-        this.x = this.smiley.x - 100;
+        this.x = this.smiley.x + 100;
         this.y = this.smiley.y;
         getImage();
         this.colRect = this.mask.getBounds();
@@ -31,7 +31,7 @@ public class LeftHand extends Enemy{
     }
 
     public void  getNewDestination(){
-        double x = Math.random() * -300 + this.smiley.destination.x;
+        double x = Math.random() * 300 + this.smiley.destination.x;
         double y = (int) (Math.random() * 400 ) + this.smiley.destination.y - 200;
         this.destination = new Point2D.Double(x, y);
     }
