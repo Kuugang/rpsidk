@@ -14,6 +14,6 @@ public interface Sound {
     public default void playSE(int i){
         sound.setFile(i);
         sound.play();
-        sound.setVolume(-999.0f);
+        sound.setVolume(-10.0f);
     }
 }

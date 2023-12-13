@@ -12,10 +12,10 @@ import main.Game;
 import java.awt.geom.Area;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class CollisionChecker implements Sound{
+public class CollisionHandler implements Sound{
     Player player;
     Game game;
-    public CollisionChecker(Player player, Game game){
+    public CollisionHandler(Player player, Game game){
         this.player = player;
         this.game = game;
     }
@@ -38,7 +38,7 @@ public class CollisionChecker implements Sound{
                             Area intersection = new Area(player.mask);
                             intersection.intersect(currentTwin.mask);
                             if (!intersection.isEmpty()) {
-                                player.takeDamage();
+                                player.takeDamage(enemy.getDamage(), false);
                             }
                         }
                         continue; 
@@ -48,7 +48,7 @@ public class CollisionChecker implements Sound{
                     Area intersection = new Area(player.mask);
                     intersection.intersect(enemy.mask);
                     if (!intersection.isEmpty()) {
-                        player.takeDamage();
+                        player.takeDamage(enemy.getDamage(), false);
                         deactivate(enemy);
                     }
                 }
@@ -110,13 +110,13 @@ public class CollisionChecker implements Sound{
             switch (enemyType){
                 case 1:
                     if(bulletType == 2){
-                        playSE(3);
+                        playSE(1);
                         deactivate(enemy);
                         deactivate(bullet);
                         return;
                     }
                     if(bulletType == 3){
-                        playSE(2);
+                        playSE(3);
                         deactivate(bullet);
                         enemy.speed+= 0.5;
                         return;
@@ -124,13 +124,13 @@ public class CollisionChecker implements Sound{
                     break;
                 case 2:
                     if(bulletType == 3){
-                        playSE(1);
+                        playSE(2);
                         deactivate(enemy);
                         deactivate(bullet);
                         return;
                     }
                     if(bulletType == 1){
-                        playSE(3);
+                        playSE(1);
                         deactivate(bullet);
                         enemy.speed+= 0.5;
                         return;
@@ -138,13 +138,13 @@ public class CollisionChecker implements Sound{
                     break;
                 case 3:
                     if(bulletType == 1){
-                        playSE(2);
+                        playSE(3);
                         deactivate(enemy);
                         deactivate(bullet);
                         return;
                     }
                     if(bulletType == 2){
-                        playSE(1);
+                        playSE(2);
                         deactivate(bullet);
                         enemy.speed+= 0.5;
                         return;
@@ -172,5 +172,4 @@ public class CollisionChecker implements Sound{
             e.isActive = false;
         }
     }
-
 }

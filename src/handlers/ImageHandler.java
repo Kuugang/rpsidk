@@ -119,6 +119,13 @@ public class ImageHandler implements UtilityTool{
                     image = new BufferedImage[1];
                     image[0] =  ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("../resource/enemies/twin.png")));
                     break;
+                case 9:
+                    image = new BufferedImage[91];
+                    for (int i = 0; i < orbImages.length; i++) {
+                        image[i] = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("../resource/buff/orb/" + (i + 1) + ".png")));
+                        image[i] = scaleImage(image[i], 45, 64);
+                    }
+                    break;
             }
             images.put(entityId, image);
         }catch(IOException e){

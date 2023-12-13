@@ -2,18 +2,19 @@ package handlers;
 
 import main.Game;
 
+import entity.*;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CopyOnWriteArrayList;
-import entity.*;
+import entity.buffs.AttackSpeedBuff;
 import entity.bullets.Bullet;
 
 public class EntityHandler{
     Game game;
-    CollisionChecker collisionChecker;
+    CollisionHandler collisionHandler;
     Player player;
 
     public CopyOnWriteArrayList<Entity> entities;
@@ -30,7 +31,7 @@ public class EntityHandler{
         startTime = System.currentTimeMillis();
         this.game = game;
         this.player = game.player;
-        this.collisionChecker = new CollisionChecker(game.player, game);
+        this.collisionHandler = new CollisionHandler(game.player, game);
         this.entities = new CopyOnWriteArrayList<>();
         this.entities.add(this.player);
 
@@ -65,7 +66,7 @@ public class EntityHandler{
 
 
     public void spawnEntity(){
-        if(this.elapsedTimeInSeconds % 60 == 0){
+        if(this.elapsedTimeInSeconds % 1 == 0){
             if(!entities.contains(Twins.getInstance(game))){
                 entities.add(0, Twins.getInstance(game));
             }
@@ -84,11 +85,11 @@ public class EntityHandler{
             }
         }
 
-        // if(Math.random() < 1.0){
-        //     if(!entities.contains(AttackSpeedBuff.getInstance(game))){
-        //         entities.add(0, AttackSpeedBuff.getInstance(game));
-        //     }
-        // }
+        if(Math.random() < .2){
+            if(!entities.contains(AttackSpeedBuff.getInstance(game))){
+                entities.add(0, AttackSpeedBuff.getInstance(game));
+            }
+        }
     }
 
     public void update(){
@@ -107,7 +108,7 @@ public class EntityHandler{
             }
         }
 
-        collisionChecker.checkCollisions(this.entities, player.bullets);
+        collisionHandler.checkCollisions(this.entities, player.bullets);
     }
 
     public void draw(Graphics2D g2){
@@ -117,11 +118,13 @@ public class EntityHandler{
         for(Entity e : entities){
             if(e.isActive){
                 e.draw(g2);
-                if(e.mask != null && e.colRect != null){
-                    g2.setColor(Color.RED);
-                    e.drawMask(g2);
-                    g2.setColor(Color.BLUE);
-                    e.drawColRect(g2);
+                if(KeyHandler.oneToggled){
+                    if(e.mask != null && e.colRect != null){
+                        g2.setColor(Color.RED);
+                        e.drawMask(g2);
+                        g2.setColor(Color.BLUE);
+                        e.drawColRect(g2);
+                    }
                 }
             }
         }

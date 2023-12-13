@@ -19,8 +19,10 @@ public abstract class Enemy extends Entity implements Rotate, SpawnPoints{
     public int attackCooldown = 0;
     protected BufferedImage aura;
     private int health;
+    protected int damage;
     public Enemy(Game game, int enemyType){
         this.health = 1;
+        this.damage = 1;
         this.speed = 1;
         this.enemyType = enemyType;
         this.id = enemyType + 4;
@@ -34,6 +36,9 @@ public abstract class Enemy extends Entity implements Rotate, SpawnPoints{
         } 
     }
 
+    public int getDamage(){
+        return this.damage;
+    }
 
     public void updateMask(double directionX, double directionY){
         Area newMask = this.game.maskHandler.getMask(this.id);

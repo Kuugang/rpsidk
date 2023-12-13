@@ -23,7 +23,6 @@ public class Twin extends Enemy implements Sound, HealthBarEntity{
     private int maxStrokeWidth;
     private int minStrokeWidth;
     private int strokeWidth;
-
     private int laserShotSoundCount = 0;
     Line2D line;
     public double playerX;
@@ -35,6 +34,7 @@ public class Twin extends Enemy implements Sound, HealthBarEntity{
     public Twin(Game game, int isShootingDuration, int isShootingTimer, int maxStrokeWidth, int minStrokeWidth) {
         super(game, 4);
         this.id = 8;
+        this.damage = 2;
         this.isShootingDuration = isShootingDuration;
         this.isShootingTimer = isShootingTimer;
         this.maxStrokeWidth = maxStrokeWidth;
@@ -70,7 +70,7 @@ public class Twin extends Enemy implements Sound, HealthBarEntity{
             Area lineArea = new Area(lineShape);
             lineArea.intersect(this.game.player.mask);
             if(!lineArea.isEmpty()){
-                this.game.player.takeDamage();
+                this.game.player.takeDamage(this.damage, true);
             }
         }
     }
@@ -176,7 +176,6 @@ public class Twin extends Enemy implements Sound, HealthBarEntity{
 
         g2.setStroke(new BasicStroke(1));
         g2.drawImage(this.image, at, null);
-        g2.draw(colRect);
 
         drawHealthBar(g2, x, y, health, maxHealth, HEALTH_BAR_WIDTH, HEALTH_BAR_HEIGHT);
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);

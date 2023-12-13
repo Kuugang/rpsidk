@@ -63,8 +63,8 @@ public class Player extends Entity implements Rotate, HealthBarEntity{
         this.mask = new Area(this.game.maskHandler.getMask(this.id));
         this.x = this.game.window.getWidth() / 2;
         this.y = this.game.window.getHeight() / 2;
-        this.health = 999;
-        this.maxHealth = 999;
+        this.health = 10;
+        this.maxHealth = 10;
         this.score = 0;
         this.colRect = this.mask.getBounds();
     }
@@ -78,11 +78,16 @@ public class Player extends Entity implements Rotate, HealthBarEntity{
         this.images = game.imageHandler.getImage(id);
     }
 
-    public void takeDamage(){
-        if(invunerableTime <= 0){
-            this.health--;
-            invunerableTime = maxInvulnerableTime;
+    public void takeDamage(int damage, boolean bossAttack){
+        if(bossAttack){
+            if(invunerableTime <= 0){
+                this.health -= damage;
+                invunerableTime = maxInvulnerableTime;
+            }
+        }else{
+            this.health -= damage;
         }
+        return;
     }
 
     public int getHealth() {

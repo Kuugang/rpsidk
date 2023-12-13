@@ -9,7 +9,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import entity.CloneableEntity;
 import entity.Entity;
-import handlers.MaskHandler;
 
 public class Bullet extends Entity implements CloneableEntity{
     public int bulletType;
@@ -68,8 +67,6 @@ public class Bullet extends Entity implements CloneableEntity{
         at.rotate(this.angle, image.getWidth() / 2.0, image.getHeight() / 2.0);
         g2.drawImage(image, at, null);
         g2.setColor(Color.RED);
-        // g2.draw(this.mask);
-        g2.draw(colRect);
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
     }
 

@@ -107,6 +107,8 @@ public class Game extends JPanel implements Runnable, Sound{
         // this.player.addBuff(new AttackSpeedBuff(15));
         
         while(gameThread != null){
+            
+
             this.absoluteMouseX =  MouseInfo.getPointerInfo().getLocation().x;
             this.absoluteMouseY = MouseInfo.getPointerInfo().getLocation().y;
             if(mouseMotionH.hasMouseMoved()){

@@ -1,12 +1,13 @@
 package handlers;
 
 
+import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import main.Game;
 
 public class KeyHandler implements KeyListener {
-    public static boolean upPressed, downPressed, leftPressed, rightPressed, spacePressed, shiftPressed, tabPressed, escToggled;
+    public static boolean upPressed, downPressed, leftPressed, rightPressed, spacePressed, shiftPressed, tabPressed, escToggled, oneToggled, twoToggled;
 
     private Game game;
     public KeyHandler(Game game){
@@ -18,6 +19,21 @@ public class KeyHandler implements KeyListener {
         char keyChar = e.getKeyChar();
         if (keyChar == KeyEvent.VK_ESCAPE) {
             escToggled = !escToggled;
+        }
+
+        if (keyChar == KeyEvent.VK_1) {
+            oneToggled = !oneToggled;
+        }
+
+        if (keyChar == KeyEvent.VK_2) {
+            twoToggled = !twoToggled;
+            if(twoToggled){
+                this.game.window.setBackground(new Color(0, 0, 0, 0));
+            }else{
+                this.game.window.setBackground(new Color(0, 0, 0, 1));
+            }
+
+
         }
 
         if(keyChar == KeyEvent.VK_TAB){
