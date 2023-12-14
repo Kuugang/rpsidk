@@ -2,6 +2,11 @@ package main;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Area;
+import java.awt.geom.PathIterator;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
 /**
@@ -69,5 +74,92 @@ public interface UtilityTool {
         return flippedImage;
     }
 
+    // public default BufferedImage rotateImage(BufferedImage originalImage, double degrees) {
+    //     int width = originalImage.getWidth();
+    //     int height = originalImage.getHeight();
+
+    //     AffineTransform transform = new AffineTransform();
+    //     transform.rotate(Math.toRadians(degrees), width / 2, height / 2);
+
+    //     BufferedImage rotatedImage = new BufferedImage(width, height, originalImage.getType());
+    //     rotatedImage.createGraphics().drawImage(originalImage, transform, null);
+
+    //     return rotatedImage;
+    // }
+
+
+    public default BufferedImage rotateImage(BufferedImage originalImage, double degrees) {
+        int width = originalImage.getWidth();
+        int height = originalImage.getHeight();
+
+        double radians = Math.toRadians(degrees);
+
+        double sin = Math.abs(Math.sin(radians));
+        double cos = Math.abs(Math.cos(radians));
+        int newWidth = (int) Math.floor(width * cos + height * sin);
+        int newHeight = (int) Math.floor(height * cos + width * sin);
+
+        BufferedImage rotatedImage = new BufferedImage(newWidth, newHeight, originalImage.getType());
+
+        Graphics2D g2 = rotatedImage.createGraphics();
+
+        AffineTransform transform = new AffineTransform();
+        transform.translate((newWidth - width) / 2, (newHeight - height) / 2);
+        transform.rotate(radians, width / 2.0, height / 2.0);
+        g2.setTransform(transform);
+
+        g2.drawImage(originalImage, 0, 0, null);
+        g2.dispose();
+
+        return rotatedImage;
+    }
+
+    public default Area rotateMaskArea(Area mask, double angleDegrees) {
+        java.awt.Rectangle bounds = mask.getBounds();
+
+        double centerX = bounds.getCenterX();
+        double centerY = bounds.getCenterY();
+
+        AffineTransform transform = new AffineTransform();
+        transform.rotate(Math.toRadians(angleDegrees), centerX, centerY);
+
+        Area rotatedMask = new Area(mask);
+        rotatedMask.transform(transform);
+
+        return rotatedMask;
+    }
+
+    public default Area scaleMaskArea(Area mask, double scaleFactor) {
+        AffineTransform transform = new AffineTransform();
+        transform.scale(scaleFactor, scaleFactor);
+        Area scaledMask = new Area(mask);
+        scaledMask.transform(transform);
+        return scaledMask;
+    }
+
+    public default Rectangle getTransformedBounds(Area area) {
+        Rectangle bounds = new Rectangle();
+        PathIterator iterator = area.getPathIterator(null);
+        double[] coords = new double[6];
+        AffineTransform transform = new AffineTransform();
+
+        while (!iterator.isDone()) {
+            int type = iterator.currentSegment(coords);
+            transform.transform(coords, 0, coords, 0, 1);
+
+            if (type != PathIterator.SEG_CLOSE) {
+                bounds.add((int) coords[0], (int) coords[1]);
+            }
+
+            if (type == PathIterator.SEG_QUADTO) {
+                bounds.add((int) coords[2], (int) coords[3]);
+            } else if (type == PathIterator.SEG_CUBICTO) {
+                bounds.add((int) coords[4], (int) coords[5]);
+            }
+
+            iterator.next();
+        }
+        return bounds;
+    }
 }
 

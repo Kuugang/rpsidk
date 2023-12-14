@@ -28,7 +28,7 @@ public class Player extends Entity implements Rotate, HealthBarEntity{
     private int damage = 1;
 
     private int invunerableTime = 0;
-    private int maxInvulnerableTime = 100;
+    private int maxInvulnerableTime = 30;
 
     public double absoluteX;
     public double absoluteY;

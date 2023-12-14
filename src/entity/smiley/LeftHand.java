@@ -1,6 +1,5 @@
 package entity.smiley;
 
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.geom.Path2D;
 import java.awt.geom.PathIterator;
@@ -23,48 +22,42 @@ public class LeftHand extends Hand{
         return new Point2D.Double(x, y);
     }
 
-    public void getImage(){
+    public void getImage() {
         super.getImage();
         Area flippedMask = new Area();
+        
+        Path2D path = null; // Initialize Path2D
+        
         for (PathIterator iterator = this.mask.getPathIterator(null); !iterator.isDone(); iterator.next()) {
-            Path2D path = new Path2D.Double();
             double[] coords = new double[6];
             int type = iterator.currentSegment(coords);
-            switch (type) {
-                case PathIterator.SEG_MOVETO:
-                    path.moveTo(-coords[0], coords[1]);
-                    break;
-                case PathIterator.SEG_LINETO:
-                    path.lineTo(-coords[0], coords[1]);
-                    break;
-                case PathIterator.SEG_QUADTO:
-                    path.quadTo(-coords[0], coords[1], -coords[2], coords[3]);
-                    break;
-                case PathIterator.SEG_CUBICTO:
-                    path.curveTo(-coords[0], coords[1], -coords[2], coords[3], -coords[4], coords[5]);
-                    break;
-                case PathIterator.SEG_CLOSE:
-                    path.closePath();
-                    break;
+            if (type == PathIterator.SEG_MOVETO) {
+                path = new Path2D.Double(); 
+                path.moveTo(-coords[0], coords[1]);
+            } else if (path != null) { 
+                switch (type) {
+                    case PathIterator.SEG_LINETO:
+                        path.lineTo(-coords[0], coords[1]);
+                        break;
+                    case PathIterator.SEG_QUADTO:
+                        path.quadTo(-coords[0], coords[1], -coords[2], coords[3]);
+                        break;
+                    case PathIterator.SEG_CUBICTO:
+                        path.curveTo(-coords[0], coords[1], -coords[2], coords[3], -coords[4], coords[5]);
+                        break;
+                    case PathIterator.SEG_CLOSE:
+                        path.closePath();
+                        break;
+                }
             }
-
-            flippedMask.add(new Area(path));
+            
+            if ((type == PathIterator.SEG_MOVETO || type == PathIterator.SEG_CLOSE) && path != null) {
+                flippedMask.add(new Area(path));
+            }
         }
+    
         thumbsUpMask = flippedMask;
     }
-
-    public void updateMask(){
-        Area newMask = null;
-        if(smiley.attack1){
-            newMask = this.game.maskHandler.getMask(this.id)[5];
-        }else{
-            newMask = thumbsUpMask;
-        }
-        AffineTransform at = AffineTransform.getTranslateInstance(this.x , this.y);
-        this.mask.reset();
-        this.mask.add(newMask);
-        this.mask.transform(at);
-    }    
 
     @Override
     public void update() {

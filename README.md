@@ -1,6 +1,6 @@
 # An endless shooter game about rock paper and scissors.
 
 #### for the java!
-#### Garbage unoptimized
+#### Garbage unoptimized bad code
 
-- [ ] wow factor++
+- [x] kapoy na ko

@@ -5,6 +5,9 @@ import entity.Twins;
 import entity.buffs.Buff;
 import entity.Twin;
 import entity.bullets.Bullet;
+import entity.smiley.Hand;
+import entity.smiley.Smiley;
+import entity.Boss;
 import entity.Enemy;
 import entity.Entity;
 import main.Game;
@@ -24,23 +27,34 @@ public class CollisionHandler implements Sound{
         player.bullets.removeIf(bullet -> !bullet.isActive);
         entities.removeIf(entity -> !entity.isActive);
 
+
+        //player-enemy Collision
         for(Entity e : entities){
             if(e instanceof Enemy){
                 Enemy enemy = (Enemy)e;
-                if(enemy instanceof Twins){
-                    Twins twins = (Twins)enemy;
-                    for(int i = 0; i < 2; i++){
-                        Twin currentTwin = (i == 0) ? twins.twin1 : twins.twin2;
-                        double distanceSquared = (currentTwin.x - player.x) * (currentTwin.x - player.x) + (currentTwin.y - player.y) * (currentTwin.y - player.y);
+                if(enemy instanceof Boss){
+                    if(enemy instanceof Twins){
+                        Twins twins = (Twins)enemy;
+                        for(int i = -1; i < 2; i++){
+                            Twin currentTwin = (i == -1) ? twins.twin1 : twins.twin2;
+                            double distanceSquared = (currentTwin.x - player.x) * (currentTwin.x - player.x) + (currentTwin.y - player.y) * (currentTwin.y - player.y);
         
-                        if (distanceSquared <= 200 * 200) {
-                            Area intersection = new Area(player.mask);
-                            intersection.intersect(currentTwin.mask);
-                            if (!intersection.isEmpty()) {
-                                player.takeDamage(enemy.getDamage(), false);
+                            if (distanceSquared <= 199 * 200) {
+                                Area intersection = new Area(player.mask);
+                                intersection.intersect(currentTwin.mask);
+                                if (!intersection.isEmpty()) {
+                                    player.takeDamage(enemy.getDamage(), true);
+                                }
                             }
+                            continue; 
                         }
-                        continue; 
+                    }else{
+                        if(!(player.colRect.intersects(enemy.colRect)))continue;
+                        Area intersection = new Area(player.mask);
+                        intersection.intersect(enemy.mask);
+                        if (!intersection.isEmpty()) {
+                            player.takeDamage(enemy.getDamage(),true);
+                        }
                     }
                 }else{
                     if(!(player.colRect.intersects(enemy.colRect)))continue;
@@ -52,6 +66,7 @@ public class CollisionHandler implements Sound{
                     }
                 }
             }
+
             if (e instanceof Buff) {
                 double distanceSquared = (e.x - player.x) * (e.x - player.x) + (e.y - player.y) * (e.y - player.y);
                 if (distanceSquared > 200 * 200) continue;
@@ -71,22 +86,33 @@ public class CollisionHandler implements Sound{
             for(Entity e : entities){
                 if (!e.isActive) continue;
                 if(e instanceof Enemy){
-                    if(e instanceof Twins){
-                        Twins twins = (Twins)e;
-                        for(int i = 0; i < 2; i++){
-                            Twin currentTwin = (i == 0) ? twins.twin1 : twins.twin2;
-                            if (!(bullet.colRect.intersects(currentTwin.colRect)))continue;
+                    Enemy enemy = (Enemy)e;
+                    if(e instanceof Boss){
+                        if(e instanceof Twins){
+                            Twins twins = (Twins)e;
+                            for(int i = 0; i < 2; i++){
+                                Twin currentTwin = (i == 0) ? twins.twin1 : twins.twin2;
+                                if (!(bullet.colRect.intersects(currentTwin.colRect)))continue;
+                                Area intersection = new Area(bullet.mask);
+                                intersection.intersect(currentTwin.mask);
+                                if (!intersection.isEmpty()) {
+                                    handleCollision(twins, bullet, entities);
+                                    continue;
+                                }
+                            }
+                            continue;
+                        }
+                        if(e instanceof Smiley){
+                            if (!(bullet.colRect.intersects(e.colRect)))continue;
                             Area intersection = new Area(bullet.mask);
-                            intersection.intersect(currentTwin.mask);
+                            intersection.intersect(enemy.mask);
                             if (!intersection.isEmpty()) {
-                                handleCollision(twins, bullet, entities);
+                                handleCollision(enemy, bullet, entities);
                                 continue;
                             }
                         }
-                        continue;
                     }
 
-                    Enemy enemy = (Enemy)e;
                     if(bullet.bulletType == 1 && enemy.enemyType == 1)continue;
                     if(bullet.bulletType == 2 && enemy.enemyType == 2)continue;
                     if(bullet.bulletType == 3 && enemy.enemyType == 3)continue;
@@ -150,10 +176,9 @@ public class CollisionHandler implements Sound{
                         return;
                     }
                     break;
-                case 4:
+                default:
                     deactivate(bullet);
                     deactivate(enemy);
-                default:
                     break;
             }
         } catch (Exception e) {

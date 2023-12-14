@@ -1,6 +1,5 @@
 package entity;
 
-import handlers.ImageHandler;
 import main.Game;
 
 import java.awt.Color;
@@ -20,6 +19,7 @@ public abstract class Enemy extends Entity implements Rotate, SpawnPoints{
     protected BufferedImage aura;
     private int health;
     protected int damage;
+    public boolean isAttacking;
     public Enemy(Game game, int enemyType){
         this.health = 1;
         this.damage = 1;

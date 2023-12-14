@@ -31,27 +31,37 @@ public abstract class Hand extends Enemy{
     public void getImage(){
         this.image = this.game.imageHandler.getImage(id)[3];
         this.mask = new Area(this.game.maskHandler.getMask(id)[3]);
+        this.thumbsUpMask = new Area(this.game.maskHandler.getMask(id)[3]);
+        this.middleFingerMask = new Area(this.game.maskHandler.getMask(id)[5]);
     }
    
-    public abstract void updateMask();
+    public void updateMask(){
+        Area newMask = null;
+        if(smiley.attack1){
+            newMask = this.middleFingerMask; 
+        }else{
+            newMask = this.thumbsUpMask;
+        }
+        AffineTransform at = AffineTransform.getTranslateInstance(this.x , this.y);
+        this.mask.reset();
+        this.mask.add(newMask);
+        this.mask.transform(at);
+    }    
 
     public void update(){
-        if(this.destination != null){
-            this.destination = getNewDestination();
-            Point2D.Double destinationdirection = new Point2D.Double(this.destination.x - this.x, this.destination.y - this.y);
-            double angle = Math.atan2(destinationdirection.y, destinationdirection.x);
-            double dx = Math.cos(angle) * this.speed;
-            double dy = Math.sin(angle) * this.speed;
-            this.x += dx;
-            this.y += dy;
-        }
+        this.destination = getNewDestination();
+        Point2D.Double destinationdirection = new Point2D.Double(this.destination.x - this.x, this.destination.y - this.y);
+        double angle = Math.atan2(destinationdirection.y, destinationdirection.x);
+        double dx = Math.cos(angle) * this.speed;
+        double dy = Math.sin(angle) * this.speed;
+        this.x += dx;
+        this.y += dy;
         at = AffineTransform.getTranslateInstance(this.x - this.image.getWidth() / 2.0, this.y - this.image.getHeight() / 2.0);
         updateMask();
     }
 
     public void draw(Graphics2D g2){
         g2.setColor(Color.RED);
-        g2.draw(mask);
         g2.drawImage(this.image, at, null);
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
     }

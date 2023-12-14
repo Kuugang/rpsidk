@@ -31,6 +31,7 @@ public class EntityHandler{
     private long interval  = 1_000;
     private int elapsedTimeInSeconds;
     private boolean isPaused;
+    private boolean bossStatus = false;
     private int buffSpawnTime;
 
     public EntityHandler(Game game){
@@ -46,19 +47,6 @@ public class EntityHandler{
         timer = new Timer();
         timer.scheduleAtFixedRate(new SpawnTask(), 0, interval);
     }
-    // TO BE DELETED?
-    // public void pauseSpawnTask() {
-    //     timer.cancel(); 
-    //     isPaused = true;
-    // }
-
-    // public void resumeSpawnTask() {
-    //     if (isPaused) {
-    //         timer = new Timer();
-    //         timer.scheduleAtFixedRate(new SpawnTask(), 0, interval);
-    //         isPaused = false;
-    //     }
-    // }
 
     public void reset(){
         for(Entity e : entities){
@@ -92,14 +80,29 @@ public class EntityHandler{
     }
 
     public void spawnEntity(){
-        if(this.elapsedTimeInSeconds % 1 == 0){
-            // if(!entities.contains(Twins.getInstance(game))){
-            //     entities.add(0, Twins.getInstance(game));
-            // }
-            if(!entities.contains(Smiley.getInstance(game))){
-                entities.add(0, Smiley.getInstance(game));
+        for(Entity e:  entities){
+            if(e instanceof Boss)
+                bossStatus = true;
+        }
+        if(!bossStatus){
+            if(this.elapsedTimeInSeconds != 0 && this.elapsedTimeInSeconds % 60 == 0){
+                int type = random.nextInt(2);
+                switch (type) {
+                    case 0:
+                        entities.add(0, Twins.getInstance(game));
+                        break;
+                    case 1:
+                        entities.add(0, Smiley.getInstance(game));
+                        break;
+                    case 2:
+                        //wa nay time:
+                        break;
+                    default:
+                        break;
+                }
             }
         }
+        bossStatus = false;
 
         if(Math.random() < summonRate){
             int n = 0;
@@ -125,7 +128,6 @@ public class EntityHandler{
     }
 
     public void update(){
-        
         if(this.elapsedTimeInSeconds % 120 == 0){
             for(Entity e: entities){
                 if(e instanceof Enemy){
@@ -167,13 +169,14 @@ public class EntityHandler{
     public void freezeEnemy() {
         for (Entity e : entities) {
             if (e instanceof Enemy) {
+                ((Enemy)e).isAttacking = false; 
                 e.speed = 0;
-
                 ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
                 executorService.schedule(() -> {
-                    e.speed = 1; // Assuming 1 is the default speed, adjust as needed
-                    executorService.shutdown(); // Shut down the executor after the task is done
-                }, 5, TimeUnit.SECONDS); // 2 seconds as an example, adjust as needed
+                    ((Enemy)e).isAttacking = false; 
+                    e.speed = 1;
+                    executorService.shutdown();
+                }, 5, TimeUnit.SECONDS);
             }
         }
     }

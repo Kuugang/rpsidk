@@ -61,6 +61,7 @@ public class Twin extends Enemy implements Sound, HealthBarEntity{
             if(Math.random() < 0.2){
                 this.isShooting = true;
                 this.isShooting = true;
+                this.isAttacking = true;
             }
         }
 

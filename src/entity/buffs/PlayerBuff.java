@@ -26,8 +26,8 @@ public class PlayerBuff extends Entity implements Buff{
         random = new Random();
         this.game = game;
         spawn();
-        this.buffType = random.nextInt(6) + 1;
-        // this.buffType = 5;
+        this.buffType = random.nextInt(7) + 1;
+        // this.buffType = 7;
         this.id = 9;
         getImage();
         colRect = this.mask.getBounds();
@@ -91,6 +91,12 @@ public class PlayerBuff extends Entity implements Buff{
                         case 6:
                             red = Math.min((int) (red * 1.5), 255);
                             blue = Math.min((int) (blue * 1.5), 255);
+                            break;
+                        case 7:
+                            red = 255;
+                            green = 255;
+                            blue = 255; 
+                            break;
                         default:
                             break;
                     }
@@ -135,6 +141,10 @@ public class PlayerBuff extends Entity implements Buff{
                 this.game.player.teleportBuffIsActive = true;
                 System.out.println("TELEPORT");
                 break;
+            case 7:
+                this.game.player.setDamage(this.game.player.getDamage() + 1);
+                System.out.println("DAMGE");
+                break;
             default:
                 break;
         }
@@ -156,46 +166,6 @@ public class PlayerBuff extends Entity implements Buff{
             this.mask.transform(at);
             this.colRect.setLocation((int) (this.x - this.image.getWidth() / 2.0), (int) (this.y - this.image.getHeight() / 2.0));
         }
-    }
-
-    public BufferedImage changeImageColor(BufferedImage originalImage){
-        BufferedImage image = new BufferedImage(originalImage.getWidth(), originalImage.getHeight(), BufferedImage.TYPE_INT_ARGB);
-        for (int y = 0; y < originalImage.getHeight(); y++) {
-            for (int x = 0; x < originalImage.getWidth(); x++) {
-                int rgba = originalImage.getRGB(x, y);
-                int alpha = (rgba >> 24) & 0xFF;
-                int red = (rgba >> 16) & 0xFF;
-                int green = (rgba >> 8) & 0xFF;
-                int blue = rgba & 0xFF;
-                switch (buffType) {
-                    case 1:
-                        red = Math.min((int) (red * 100), 255);
-                        break;
-                    case 2:
-                        return originalImage;
-                    case 3:
-                        red = Math.min((int) (red * 100), 255);
-                        green = Math.min((int) (green * 100), 255);
-                        break;
-                    case 4:
-                        ColorSpace colorSpace = ColorSpace.getInstance(ColorSpace.CS_GRAY); // Change to the desired color space
-                        ColorConvertOp op = new ColorConvertOp(colorSpace, null);
-                        image = op.filter(images[frameIndex], null);
-                        return image;
-                    case 5:
-                        green = Math.min((int) (green * 100), 255);
-                        break;
-                    case 6:
-                        red = Math.min((int) (red * 100), 255);
-                        blue = Math.min((int) (blue * 100), 255);
-                    default:
-                        break;
-                }
-                int newRGBA = (alpha << 24) | (red << 16) | (green << 8) | blue;
-                image.setRGB(x, y, newRGBA);
-            }
-        }
-        return image;
     }
 
     @Override
