@@ -91,11 +91,6 @@ public abstract class Enemy extends Entity implements Rotate, SpawnPoints{
         this.x += dx;
         this.y += dy;
 
-        // this.x -= this.game.player.speed_x_right * 0.5;
-        // this.x -= this.game.player.speed_x_left * 0.5;
-        // this.y -= this.game.player.speed_y_up * 0.5;
-        // this.y -= this.game.player.speed_y_down * 0.5;
-
         updateMask(directionX, directionY);
 
         this.attackCooldown++;

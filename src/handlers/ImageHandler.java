@@ -125,17 +125,16 @@ public class ImageHandler implements UtilityTool{
                     }
                     break;
                 case 10:
-                    image = new BufferedImage[1];
+                    image = new BufferedImage[6];
                     image[0] = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("../resource/enemies/smiley/smiley.png")));
-                    break;
-                case 11:
-                    image = new BufferedImage[1];
-                    image[0] = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("../resource/enemies/smiley/thumbs-up.png")));
-                    break;
-                case 12:
-                    image = new BufferedImage[1];
-                    image[0] = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("../resource/enemies/smiley/thumbs-up.png")));
-                    image[0] = flipHorizontal(image[0]);
+                    image[1] = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("../resource/enemies/smiley/super-angry.png")));
+                    image[2] = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("../resource/enemies/smiley/omg.png")));
+
+                    image[3] = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("../resource/enemies/smiley/thumbs-up.png")));
+                    image[3] = flipHorizontal(image[3]);
+                    image[4] = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("../resource/enemies/smiley/thumbs-up.png")));
+                    image[5] = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("../resource/enemies/smiley/middle-finger.png")));
+
                     break;
             }
             images.put(entityId, image);

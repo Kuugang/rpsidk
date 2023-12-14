@@ -9,7 +9,6 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CopyOnWriteArrayList;
-import entity.buffs.PlayerBuff;
 import entity.bullets.Bullet;
 import entity.smiley.Smiley;
 
@@ -82,32 +81,35 @@ public class EntityHandler{
         }
     }
 
+    public void addEntity(Entity e){
+        entities.add(e);
+    }
 
     public void spawnEntity(){
         if(this.elapsedTimeInSeconds % 1 == 0){
             // if(!entities.contains(Twins.getInstance(game))){
                 // entities.add(0, Twins.getInstance(game));
             // }
-            // if(!entities.contains(Smiley.getInstance(game))){
-            //     entities.add(0, Smiley.getInstance(game));
-            // }
-        }
-
-        if(Math.random() < summonRate){
-            int n = 0;
-            for(int i = 0; i < 3; i++){
-                n = random.nextInt(3);
-                if(n == 0)entities.add(0, new RockEnemy(game));
-                if(n == 1)entities.add(0, new PaperEnemy(game));
-                if(n == 2)entities.add(0, new ScissorEnemy(game));
+            if(!entities.contains(Smiley.getInstance(game))){
+                entities.add(0, Smiley.getInstance(game));
             }
         }
 
-        if(Math.random() < 1){
-            if(!entities.contains(PlayerBuff.getInstance(game))){
-                entities.add(0, PlayerBuff.getInstance(game));
-            }
-        }
+        // if(Math.random() < summonRate){
+        //     int n = 0;
+        //     for(int i = 0; i < 3; i++){
+        //         n = random.nextInt(3);
+        //         if(n == 0)entities.add(0, new RockEnemy(game));
+        //         if(n == 1)entities.add(0, new PaperEnemy(game));
+        //         if(n == 2)entities.add(0, new ScissorEnemy(game));
+        //     }
+        // }
+
+        // if(Math.random() < 1){
+        //     if(!entities.contains(PlayerBuff.getInstance(game))){
+        //         entities.add(0, PlayerBuff.getInstance(game));
+        //     }
+        // }
     }
 
     public void update(){

@@ -3,30 +3,26 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.image.BufferedImage;
-import java.util.Random;
 
 import entity.Entity;
 import main.Game;
 
-public class PlayerBuff extends Entity implements Buff{
+public class AttackSpeedBuff extends Entity implements Buff{
     private int frameIndex;
-    private static PlayerBuff instance = null;
+    private static AttackSpeedBuff instance = null;
     private BufferedImage[] images;
-    private int buffType;
-    Random random;
-    private PlayerBuff(Game game) {
-        random = new Random();
+
+    private AttackSpeedBuff(Game game) {
         this.game = game;
-        spawn();
-        this.buffType = random.nextInt(3);
+        respawn();
         this.id = 9;
         getImage();
         colRect = this.mask.getBounds();
     }
 
-    public static PlayerBuff getInstance(Game game) {
+    public static AttackSpeedBuff getInstance(Game game) {
         if (instance == null) {
-            instance = new PlayerBuff(game);
+            instance = new AttackSpeedBuff(game);
         }
         return instance;
     }
@@ -37,24 +33,13 @@ public class PlayerBuff extends Entity implements Buff{
         this.mask = new Area(this.game.maskHandler.getMask(this.id));
     }
 
-    public void spawn() {
+    public void respawn() {
         this.x = (int) (Math.random() * this.game.SCREENSIZE.width);
         this.y = (int) (Math.random() * this.game.SCREENSIZE.height);
     }
 
     public void applyBuff() {
-        switch (buffType + 1) {
-            case 1:
-                this.game.player.reloadTime -= 1;
-                System.out.println("ATK SPEED");
-                break;
-            case 2:
-                this.game.player.top_speed  += 1;
-                System.out.println("MOVE SPEED");
-                break;
-            default:
-                break;
-        }
+        this.game.player.reloadTime -= 1;
         this.isActive = false;
         instance = null;
     }
