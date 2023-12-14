@@ -53,7 +53,7 @@ public class Twin extends Enemy implements Sound, HealthBarEntity{
 
     public void getImage(){
         this.image = this.game.imageHandler.getImage(id)[0];
-        this.mask = new Area(this.game.maskHandler.getMask(8));
+        this.mask = new Area(this.game.maskHandler.getMask(8)[0]);
     }
 
     public void shoot(){
@@ -90,7 +90,7 @@ public class Twin extends Enemy implements Sound, HealthBarEntity{
     }
 
     public void updateMask(){
-        Area newMask = this.game.maskHandler.getMask(this.id);
+        Area newMask = this.game.maskHandler.getMask(this.id)[0];
         AffineTransform at = AffineTransform.getTranslateInstance(this.x , this.y);
         double rotationAngleInRadians = Math.atan2(directionY, directionX);
         at.rotate(rotationAngleInRadians);

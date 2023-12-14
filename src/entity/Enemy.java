@@ -46,7 +46,7 @@ public abstract class Enemy extends Entity implements Rotate, SpawnPoints{
     }
 
     public void updateMask(double directionX, double directionY){
-        Area newMask = this.game.maskHandler.getMask(this.id);
+        Area newMask = this.game.maskHandler.getMask(this.id)[0];
         AffineTransform at = AffineTransform.getTranslateInstance(this.x, this.y);
         directionX = this.game.player.x - (this.x + (double) this.image.getWidth() / 2);
         directionY = this.game.player.y - (this.y + (double) this.image.getHeight() / 2);

@@ -27,7 +27,7 @@ public class Bullet extends Entity implements CloneableEntity{
     public void getImage(){
         this.image = this.game.imageHandler.getImage(bulletType + 1)[0];
         this.id = bulletType + 1;
-        this.mask = new Area(this.game.maskHandler.getMask(id));
+        this.mask = new Area(this.game.maskHandler.getMask(id)[0]);
         this.colRect = this.mask.getBounds();
     }
 
@@ -58,7 +58,7 @@ public class Bullet extends Entity implements CloneableEntity{
         AffineTransform at = AffineTransform.getTranslateInstance(this.x, this.y);
         at.rotate(this.angle);
         this.mask.reset();
-        this.mask.add(this.game.maskHandler.getMask(this.id));
+        this.mask.add(this.game.maskHandler.getMask(this.id)[0]);
         this.mask.transform(at);
     }
 

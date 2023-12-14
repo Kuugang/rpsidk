@@ -60,6 +60,7 @@ public class CollisionHandler implements Sound{
                 intersection.intersect(e.mask);
                 if (!intersection.isEmpty()) {
                     ((Buff)e).applyBuff();
+                    e.isActive = false;
                 }
             }
         }

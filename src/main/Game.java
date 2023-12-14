@@ -69,7 +69,6 @@ public class Game extends JPanel implements Runnable, Sound{
 
         this.addKeyListener(keyH);
         this.addMouseListener(mouseH);
-        player.setHandlers(keyH, mouseH);
         this.scoreBoard = new ScoreBoard();
         this.requestFocusInWindow();
     }

@@ -9,6 +9,11 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+import entity.buffs.PlayerBuff;
 import entity.bullets.Bullet;
 import entity.smiley.Smiley;
 
@@ -16,7 +21,7 @@ public class EntityHandler{
     Game game;
     CollisionHandler collisionHandler;
     Player player;
-
+    
     public CopyOnWriteArrayList<Entity> entities;
 
     private Timer timer;
@@ -26,6 +31,7 @@ public class EntityHandler{
     private long interval  = 1_000;
     private int elapsedTimeInSeconds;
     private boolean isPaused;
+    private int buffSpawnTime;
 
     public EntityHandler(Game game){
         random = new Random();
@@ -40,19 +46,19 @@ public class EntityHandler{
         timer = new Timer();
         timer.scheduleAtFixedRate(new SpawnTask(), 0, interval);
     }
+    // TO BE DELETED?
+    // public void pauseSpawnTask() {
+    //     timer.cancel(); 
+    //     isPaused = true;
+    // }
 
-    public void pauseSpawnTask() {
-        timer.cancel(); 
-        isPaused = true;
-    }
-
-    public void resumeSpawnTask() {
-        if (isPaused) {
-            timer = new Timer();
-            timer.scheduleAtFixedRate(new SpawnTask(), 0, interval);
-            isPaused = false;
-        }
-    }
+    // public void resumeSpawnTask() {
+    //     if (isPaused) {
+    //         timer = new Timer();
+    //         timer.scheduleAtFixedRate(new SpawnTask(), 0, interval);
+    //         isPaused = false;
+    //     }
+    // }
 
     public void reset(){
         for(Entity e : entities){
@@ -88,32 +94,39 @@ public class EntityHandler{
     public void spawnEntity(){
         if(this.elapsedTimeInSeconds % 1 == 0){
             // if(!entities.contains(Twins.getInstance(game))){
-                // entities.add(0, Twins.getInstance(game));
+            //     entities.add(0, Twins.getInstance(game));
             // }
             if(!entities.contains(Smiley.getInstance(game))){
                 entities.add(0, Smiley.getInstance(game));
             }
         }
 
-        // if(Math.random() < summonRate){
-        //     int n = 0;
-        //     for(int i = 0; i < 3; i++){
-        //         n = random.nextInt(3);
-        //         if(n == 0)entities.add(0, new RockEnemy(game));
-        //         if(n == 1)entities.add(0, new PaperEnemy(game));
-        //         if(n == 2)entities.add(0, new ScissorEnemy(game));
-        //     }
-        // }
+        if(Math.random() < summonRate){
+            int n = 0;
+            for(int i = 0; i < 3; i++){
+                n = random.nextInt(3);
+                if(n == 0)entities.add(0, new RockEnemy(game));
+                if(n == 1)entities.add(0, new PaperEnemy(game));
+                if(n == 2)entities.add(0, new ScissorEnemy(game));
+            }
+        }
 
-        // if(Math.random() < 1){
-        //     if(!entities.contains(PlayerBuff.getInstance(game))){
-        //         entities.add(0, PlayerBuff.getInstance(game));
-        //     }
-        // }
+        if(Math.random() < 1){
+            if(!entities.contains(PlayerBuff.getInstance(game))){
+                entities.add(0, PlayerBuff.getInstance(game));
+                buffSpawnTime = elapsedTimeInSeconds;
+            }else{
+                if(elapsedTimeInSeconds - buffSpawnTime == 20){
+                    PlayerBuff pb = PlayerBuff.getInstance(game);
+                    pb.destroyInstance();
+                } 
+            }
+        }
     }
 
     public void update(){
-        if(this.elapsedTimeInSeconds != 0 && this.elapsedTimeInSeconds % 120 == 0){
+        
+        if(this.elapsedTimeInSeconds % 120 == 0){
             for(Entity e: entities){
                 if(e instanceof Enemy){
                     ((Enemy)e).setHealth(elapsedTimeInSeconds / 120);
@@ -150,4 +163,19 @@ public class EntityHandler{
             }
         }
     }
+
+    public void freezeEnemy() {
+        for (Entity e : entities) {
+            if (e instanceof Enemy) {
+                e.speed = 0;
+
+                ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+                executorService.schedule(() -> {
+                    e.speed = 1; // Assuming 1 is the default speed, adjust as needed
+                    executorService.shutdown(); // Shut down the executor after the task is done
+                }, 5, TimeUnit.SECONDS); // 2 seconds as an example, adjust as needed
+            }
+        }
+    }
+
 }

@@ -19,11 +19,10 @@ public class Smiley extends Enemy implements Boss {
     private LeftHand leftHand;
     protected boolean isAttacking = false;
     private int attack1Duration = 300;
-    private Boolean attack1 = false;
+    protected Boolean attack1 = false;
     private int attackTimer =  0;
 
     private AffineTransform at;
-    private Point2D.Double playerCoordinates;
 
     private Smiley(Game game) {
         super(game);
@@ -55,7 +54,7 @@ public class Smiley extends Enemy implements Boss {
 
     public void getImage(){
         this.image = this.game.imageHandler.getImage(this.id)[0];
-        this.mask = new Area(this.game.maskHandler.getMask(this.id));
+        this.mask = new Area(this.game.maskHandler.getMask(this.id)[0]);
     }
 
     public void takeDamage(int damage){
@@ -72,7 +71,11 @@ public class Smiley extends Enemy implements Boss {
     }
 
     public void updateMask(){
-        Area newMask = this.game.maskHandler.getMask(this.id);
+        if(attack1){
+
+        }
+        Area newMask = this.game.maskHandler.getMask(this.id)[0];
+
         AffineTransform at = AffineTransform.getTranslateInstance(this.x , this.y);
         this.mask.reset();
         this.mask.add(newMask);
@@ -84,7 +87,6 @@ public class Smiley extends Enemy implements Boss {
             this.image = this.game.imageHandler.getImage(10)[1];
             this.leftHand.image = this.game.imageHandler.getImage(id)[5];
             this.rightHand.image = this.game.imageHandler.getImage(id)[5];
-
             attackTimer++;
         }else{
             isAttacking = false;
@@ -97,7 +99,7 @@ public class Smiley extends Enemy implements Boss {
         long currentTime = System.currentTimeMillis();
         if (currentTime - lastExecutionTime >= 1000) {
             if(!isAttacking){
-                if(Math.random() < 1){
+                if(Math.random() < 0.4){
                     isAttacking = true;
                     attack1 = true;
                 }

@@ -6,7 +6,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 public class MouseHandler implements MouseListener {
-    public boolean shoot;
+    public static boolean shoot;
     public boolean leftClicked;
 
     Game game;
@@ -61,15 +61,27 @@ public class MouseHandler implements MouseListener {
             }
         }
     }
-
     @Override
     public void mousePressed(MouseEvent e) {
         int code = e.getButton();
-        if(code == 1){
+        if (code == MouseEvent.BUTTON1) {
             shoot = true;
             leftClicked = true;
+            int mouseX = e.getX();
+            int mouseY = e.getY();
+            if (game.player.dashBuffIsActive) {
+                game.player.dash(mouseX, mouseY, 1000);
+                game.player.dashBuffIsActive = false;
+            }
+            if(game.player.teleportBuffIsActive){
+                shoot = false;
+                game.player.teleportPlayerTo((double)mouseX, (double)mouseY);
+                game.player.teleportBuffIsActive = false;
+            }
         }
     }
+
+
 
     @Override
     public void mouseReleased(MouseEvent e) {

@@ -41,36 +41,6 @@ public class ImageHandler implements UtilityTool{
             }
             images.put(1, playerImages);
 
-            // for (int i = 0; i < playerFrames.length; i++) {
-            //     playerFrames[i]= ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("../resource/player/idle" + (i + 1) + ".png")));
-            // }
-
-            // paperBulletImage =  ImageIO.read(getClass().getResourceAsStream("../resource/bullets/paper.png"));
-            // scissorBulletImage =  ImageIO.read(getClass().getResourceAsStream("../resource/bullets/scissors.png"));
-            // rockBulletImage =  ImageIO.read(getClass().getResourceAsStream("../resource/bullets/rock.png"));
-
-            // enemyRockImage =  ImageIO.read(getClass().getResourceAsStream("../resource/enemies/rock.png"));
-            // enemyPaperImage =  ImageIO.read(getClass().getResourceAsStream("../resource/enemies/paper.png"));
-            // enemyScissorImage =  ImageIO.read(getClass().getResourceAsStream("../resource/enemies/scissors.png"));
-
-            // enemyRockAura = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("../resource/enemies/rockaura.png")));
-            // enemyPaperAura = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("../resource/enemies/paperaura.png")));
-            // enemyScissorsAura = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("../resource/enemies/scissorsaura.png")));
-
-            // boss1 = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("../resource/enemies/twin.png")));
-            
-            // for (int i = 0; i < orbImages.length; i++) {
-            //     orbImages[i] = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("../resource/buff/orb/" + (i + 1) + ".png")));
-            //     orbImages[i] = scaleImage(orbImages[i], 89, 129);
-
-            // }
-
-            // for (int i = 0; i < gems.length; i++) {
-            //     gems[i] = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("../resource/PurimoJemu/" + (i + 1) + ".png")));
-            // }
-            
-            // smiley = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("../resource/enemies/smiley/smiley.png")));
-            // thumbsUp = ImageIO.read(Objects.requireNonNull(getClass().getResourceAsStream("../resource/enemies/smiley/thumbs-up.png")));
         }catch(IOException e){
             e.printStackTrace();
         }

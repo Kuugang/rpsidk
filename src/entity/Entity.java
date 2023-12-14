@@ -31,6 +31,22 @@ public abstract class Entity {
     public abstract void draw(Graphics2D g2);
     public abstract void update();
 
+    public int getHealth(){
+        return this.health;
+    }
+
+    public int getMaxHealth(){
+        return this.maxHealth;
+    }
+
+    public void setHealth(int health){
+        this.health = health;
+    }
+
+    public void setMaxHealth(int maxHealth){
+        this.maxHealth = maxHealth;
+    }
+
     public void drawMask(Graphics2D g2){
         g2.draw(mask);
     }

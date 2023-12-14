@@ -4,28 +4,29 @@ import java.awt.geom.Area;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
-
 import main.Game;
 
 public class MaskHandler {
-    private HashMap<Integer, Area> masks = new HashMap<>();;
+    private HashMap<Integer, Area[]> masks = new HashMap<>();;
     Game game;
 
     public MaskHandler(Game game){
         this.game = game;
     } 
 
-    private Area addMask(int entityId){
-        BufferedImage image = this.game.imageHandler.getImage(entityId)[0];
-
-        Area mask = createMaskFromTransparency(image, 0 - image.getWidth() / 2, 0 - image.getHeight() / 2);
-        masks.put(entityId, mask);
-        return mask;
+    private Area[] addMask(int entityId){
+        BufferedImage images[] = this.game.imageHandler.getImage(entityId);
+        Area masksArray[] = new Area[images.length];
+        for(int i = 0; i < images.length; i++){
+            masksArray[i] = createMaskFromTransparency(images[i], 0 - images[i].getWidth() / 2, 0 - images[i].getHeight() / 2);
+        }
+        masks.put(entityId, masksArray);
+        return masksArray;
     }
 
-    public Area getMask(int entityId){
+    public Area[] getMask(int entityId){
         if(!masks.containsKey(entityId)){
-            Area mask = addMask(entityId);
+            Area mask[] = addMask(entityId);
             masks.put(entityId, mask);
             return mask;
         }

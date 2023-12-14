@@ -14,13 +14,17 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.image.BufferedImage;
 import java.util.Iterator;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Player extends Entity implements Rotate, HealthBarEntity{
     public int score;
     public int fireCooldown = 0;
-    public int reloadTime = 0;
+    public int reloadTime = 30;
     public int bulletType = 1;
+    public boolean teleportBuffIsActive = false;
+    public boolean dashBuffIsActive = false;
     private int damage = 1;
 
     private int invunerableTime = 0;
@@ -40,7 +44,7 @@ public class Player extends Entity implements Rotate, HealthBarEntity{
 
     KeyHandler keyH;
     MouseHandler mouseH;
-    public BufferedImage[] playerFrames;
+    // public BufferedImage[] playerFrames; // TO BE DELETED?
     public BufferedImage[] images;
     public CopyOnWriteArrayList<Bullet> bullets = new CopyOnWriteArrayList<>();
     private BufferedImage bulletTypeImage;
@@ -59,18 +63,13 @@ public class Player extends Entity implements Rotate, HealthBarEntity{
         this.x = 0;
         this.y = 0;
         this.bulletTypeImage = this.game.imageHandler.getImage(2)[0];
-        this.mask = new Area(this.game.maskHandler.getMask(this.id));
+        this.mask = new Area(this.game.maskHandler.getMask(this.id)[0]);
         this.x = this.game.window.getWidth() / 2;
         this.y = this.game.window.getHeight() / 2;
-        this.health =  999;
-        this.maxHealth = 999;
+        this.health = 10;
+        this.maxHealth = 10;
         this.score = 0;
         this.colRect = this.mask.getBounds();
-    }
-
-    public void setHandlers(KeyHandler keyH, MouseHandler mouseH){
-        this.mouseH = mouseH;
-        this.keyH = keyH;
     }
 
     public void getImage() {
@@ -217,7 +216,7 @@ public class Player extends Entity implements Rotate, HealthBarEntity{
         double rotationAngleInRadians = Math.atan2(directionY, directionX);
         at.rotate(rotationAngleInRadians, image.getWidth() / 2.0, image.getHeight() / 2.0);
 
-        Area newMask = this.game.maskHandler.getMask(this.id);
+        Area newMask = this.game.maskHandler.getMask(this.id)[0];
         at = AffineTransform.getTranslateInstance(this.x, this.y);
 
         directionX = this.game.absoluteMouseX - ((game.getLocationOnScreen().x + this.x));
@@ -236,7 +235,7 @@ public class Player extends Entity implements Rotate, HealthBarEntity{
         //Shooting
         fireCooldown++;
         if (fireCooldown >= reloadTime) fireCooldown = reloadTime;
-        if (KeyHandler.spacePressed || mouseH.shoot) {
+        if (KeyHandler.spacePressed || MouseHandler.shoot) {
             shoot();
         }
         updatePlayerBullets();
@@ -269,5 +268,36 @@ public class Player extends Entity implements Rotate, HealthBarEntity{
 
     public void setDamage(int damage){
         this.damage = damage;
+    }
+
+    public void dash(int targetX, int targetY, int teleportDuration) {
+        int frames = 60;
+        double deltaX = (targetX - this.x) / (double) frames;
+        double deltaY = (targetY - this.y) / (double) frames;
+
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            private int currentFrame = 0;
+            @Override
+            public void run() {
+                if (currentFrame < frames) {
+                    Player.this.x += deltaX;
+                    Player.this.y += deltaY;
+                    currentFrame++;
+                    if(KeyHandler.upPressed || KeyHandler.downPressed || KeyHandler.rightPressed || KeyHandler.leftPressed){
+                        timer.cancel();
+                        timer.purge();
+                    }
+                } else {
+                    timer.cancel();
+                    timer.purge();
+                }
+            }
+        }, 0, teleportDuration / frames);
+    }
+
+    public void teleportPlayerTo(double x, double y) {
+        this.x = x;
+        this.y = y;
     }
 }
