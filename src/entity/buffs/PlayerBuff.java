@@ -5,7 +5,9 @@ import java.awt.geom.Area;
 import java.awt.image.BufferedImage;
 import java.util.Random;
 
+import entity.Enemy;
 import entity.Entity;
+import handlers.EntityHandler;
 import main.Game;
 
 public class PlayerBuff extends Entity implements Buff{
@@ -13,8 +15,10 @@ public class PlayerBuff extends Entity implements Buff{
     private static PlayerBuff instance = null;
     private BufferedImage[] images;
     private int buffType;
+    EntityHandler entityHandler;
     Random random;
     private PlayerBuff(Game game) {
+        this.entityHandler = game.entityHandler;
         random = new Random();
         this.game = game;
         spawn();
@@ -43,7 +47,7 @@ public class PlayerBuff extends Entity implements Buff{
     }
 
     public void applyBuff() {
-        switch (buffType + 1) {
+        switch (4) {
             case 1:
                 this.game.player.reloadTime -= 1;
                 System.out.println("ATK SPEED");
@@ -52,10 +56,16 @@ public class PlayerBuff extends Entity implements Buff{
                 this.game.player.top_speed  += 1;
                 System.out.println("MOVE SPEED");
                 break;
+            case 3:
+                entityHandler.freezeEnemy();
+                break;
+            case 4:
+                this.game.player.teleportBuffIsActive = true;
+                break;
             default:
                 break;
         }
-                this.isActive = false;
+        this.isActive = false;
         instance = null;
     }
 

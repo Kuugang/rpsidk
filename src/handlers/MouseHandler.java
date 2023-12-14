@@ -62,14 +62,44 @@ public class MouseHandler implements MouseListener {
         }
     }
 
+    /**
+     * Invoked when a mouse button is pressed.
+     *
+     * @param e The MouseEvent containing information about the event.
+     */
     @Override
     public void mousePressed(MouseEvent e) {
+        // Get the code representing the pressed mouse button
         int code = e.getButton();
-        if(code == 1){
+
+        // Check if the left mouse button (BUTTON1) is pressed
+        if (code == MouseEvent.BUTTON1) {
+            // Indicate that a shooting action is triggered
             shoot = true;
+
+            // Indicate that the left mouse button is clicked
             leftClicked = true;
+
+            // Check if teleport buff is active
+            if (game.player.teleportBuffIsActive) {
+                // Deactivate shooting during teleportation
+                shoot = false;
+
+                // Get the adjusted coordinates for teleportation, considering player's image dimensions
+                int mouseX = e.getX() - game.player.image.getWidth() / 2;
+                int mouseY = e.getY() - game.player.image.getHeight() / 2;
+
+                // Trigger teleportation logic with a duration of 1000 milliseconds (1 second)
+                game.player.teleportPlayerTo(mouseX, mouseY); // BLINK BLINK
+                game.player.teleportPlayerTo(mouseX, mouseY, 1000); // FORCE STAFF
+
+                // Deactivate the teleport buff after usage
+                game.player.teleportBuffIsActive = false;
+            }
         }
     }
+
+
 
     @Override
     public void mouseReleased(MouseEvent e) {

@@ -14,6 +14,8 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.image.BufferedImage;
 import java.util.Iterator;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Player extends Entity implements Rotate, HealthBarEntity{
@@ -21,6 +23,7 @@ public class Player extends Entity implements Rotate, HealthBarEntity{
     public int fireCooldown = 0;
     public int reloadTime = 0;
     public int bulletType = 1;
+    public boolean teleportBuffIsActive = false;
     private int damage = 1;
 
     private int invunerableTime = 0;
@@ -270,4 +273,35 @@ public class Player extends Entity implements Rotate, HealthBarEntity{
     public void setDamage(int damage){
         this.damage = damage;
     }
+    public void teleportPlayerTo(int targetX, int targetY, int teleportDuration) {
+        I-CHECK NI JAKE, KANI KAY DASH SIYA MURAG BLINK FORCE STAFF
+        int frames = 60; // Number of frames for the teleportation animation
+        double deltaX = (targetX - this.x) / (double) frames;
+        double deltaY = (targetY - this.y) / (double) frames;
+
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            private int currentFrame = 0;
+
+            @Override
+            public void run() {
+                if (currentFrame < frames) {
+                    // Update player's position with accurate floating-point values
+                    Player.this.x += deltaX;
+                    Player.this.y += deltaY;
+                    currentFrame++;
+                } else {
+                    // Teleportation complete, cancel the timer
+                    timer.cancel();
+                    timer.purge();
+                }
+            }
+        }, 0, teleportDuration / frames);
+    }
+    public void teleportPlayerTo(int x, int y) {
+        I-CHECK NI JAKE, KANI KAY TELEPORT SIYA MURAG BLINK DAGGER
+        this.x = x;
+        this.y = y;
+    }
+
 }

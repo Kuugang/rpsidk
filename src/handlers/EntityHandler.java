@@ -9,6 +9,10 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 import entity.buffs.PlayerBuff;
 import entity.bullets.Bullet;
 
@@ -129,4 +133,19 @@ public class EntityHandler{
             }
         }
     }
+
+    public void freezeEnemy() {
+        for (Entity e : entities) {
+            if (e instanceof Enemy) {
+                e.speed = 0;
+
+                ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+                executorService.schedule(() -> {
+                    e.speed = 1; // Assuming 1 is the default speed, adjust as needed
+                    executorService.shutdown(); // Shut down the executor after the task is done
+                }, 2, TimeUnit.SECONDS); // 2 seconds as an example, adjust as needed
+            }
+        }
+    }
+
 }
