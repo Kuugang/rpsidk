@@ -87,6 +87,7 @@ public class EntityHandler{
         if(!bossStatus){
             if(this.elapsedTimeInSeconds != 0 && this.elapsedTimeInSeconds % 60 == 0){
                 int type = random.nextInt(2);
+                // int type = 1;
                 switch (type) {
                     case 0:
                         entities.add(0, Twins.getInstance(game));
@@ -114,7 +115,7 @@ public class EntityHandler{
             }
         }
 
-        if(Math.random() < 1){
+        if(Math.random() < 0.4){
             if(!entities.contains(PlayerBuff.getInstance(game))){
                 entities.add(0, PlayerBuff.getInstance(game));
                 buffSpawnTime = elapsedTimeInSeconds;

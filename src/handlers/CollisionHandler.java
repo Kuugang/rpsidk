@@ -5,7 +5,6 @@ import entity.Twins;
 import entity.buffs.Buff;
 import entity.Twin;
 import entity.bullets.Bullet;
-import entity.smiley.Hand;
 import entity.smiley.Smiley;
 import entity.Boss;
 import entity.Enemy;
